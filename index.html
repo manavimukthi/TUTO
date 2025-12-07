@@ -2,9 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Syllabus Paper Generator</title>
     <style>
+      /* --- GLOBAL RESET (Fixes the "going out" issue) --- */
+      * {
+        box-sizing: border-box;
+      }
+
       :root {
         --primary-color: #4a90e2;
         --success-color: #28a745;
@@ -20,7 +28,7 @@
         color: var(--text-color);
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start; /* Better for mobile scrolling */
         min-height: 100vh;
         margin: 0;
         padding: 20px;
@@ -33,28 +41,33 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 600px;
+        margin-bottom: 40px; /* Space at bottom for scrolling */
       }
 
       h2 {
         text-align: center;
         color: var(--primary-color);
         margin-bottom: 30px;
+        margin-top: 0;
       }
 
       .form-group {
         margin-bottom: 20px;
         width: 100%;
       }
+
       .form-row {
         display: flex;
         gap: 20px;
       }
+
       label {
         display: block;
         margin-bottom: 8px;
         font-weight: 600;
       }
 
+      /* Inputs */
       input[type="text"],
       textarea,
       select {
@@ -62,22 +75,40 @@
         padding: 12px;
         border: 1px solid var(--border-color);
         border-radius: 6px;
-        box-sizing: border-box;
-        font-size: 14px;
+        font-size: 16px; /* Prevents iOS auto-zoom */
+        font-family: inherit;
       }
 
-      /* File Input Style */
+      /* Unit Box Styling (Replaces inline styles) */
+      .unit-box {
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background-color: #fafafa;
+      }
+
+      .unit-label {
+        color: #4a90e2;
+        font-weight: bold;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      /* File Input Style - strict max-width */
       input[type="file"] {
         display: block;
         width: 100%;
+        max-width: 100%;
         padding: 10px;
         background: white;
         border: 1px dashed var(--border-color);
         border-radius: 6px;
         cursor: pointer;
+        font-size: 14px;
       }
 
-      /* Submit Button */
+      /* Buttons */
       .submit-btn {
         width: 100%;
         padding: 15px;
@@ -91,12 +122,12 @@
         display: block;
         text-align: center;
         text-decoration: none;
+        transition: background-color 0.2s;
       }
       .submit-btn:hover {
         background-color: #357abd;
       }
 
-      /* Download Button (Green) */
       .download-btn {
         background-color: var(--success-color);
         margin-top: 15px;
@@ -114,10 +145,11 @@
         margin: 15px 0;
         font-weight: bold;
         color: #888;
-        font-size: 0.9em;
+        font-size: 0.85em;
+        text-transform: uppercase;
       }
 
-      /* Spinner */
+      /* Loading Spinner */
       .spinner {
         border: 5px solid #f3f3f3;
         border-top: 5px solid var(--primary-color);
@@ -145,10 +177,37 @@
         text-align: center;
       }
 
-      @media (max-width: 500px) {
+      /* --- MOBILE OPTIMIZATION --- */
+      @media (max-width: 600px) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          padding: 20px 15px; /* Tighter padding on mobile */
+          margin-top: 10px;
+        }
+
+        h2 {
+          font-size: 1.5rem;
+          margin-bottom: 20px;
+        }
+
         .form-row {
           flex-direction: column;
           gap: 0;
+        }
+
+        /* Adjust internal padding of Unit boxes for mobile */
+        .unit-box {
+          padding: 12px;
+        }
+
+        /* Ensure inputs never overflow */
+        input,
+        select,
+        textarea {
+          max-width: 100%;
         }
       }
     </style>
@@ -186,27 +245,23 @@
             </div>
           </div>
 
-          <div
-            class="form-group"
-            style="border: 1px solid #ddd; padding: 15px; border-radius: 8px"
-          >
-            <label style="color: #4a90e2">Unit 01</label>
+          <div class="unit-box">
+            <label class="unit-label">Unit 01</label>
             <textarea
               id="syllabusUnit1"
               placeholder="Paste text here..."
+              rows="4"
             ></textarea>
             <div class="or-divider">- OR UPLOAD FILE -</div>
             <input type="file" id="fileUnit1" />
           </div>
 
-          <div
-            class="form-group"
-            style="border: 1px solid #ddd; padding: 15px; border-radius: 8px"
-          >
-            <label style="color: #4a90e2">Unit 02</label>
+          <div class="unit-box">
+            <label class="unit-label">Unit 02</label>
             <textarea
               id="syllabusUnit2"
               placeholder="Paste text here..."
+              rows="4"
             ></textarea>
             <div class="or-divider">- OR UPLOAD FILE -</div>
             <input type="file" id="fileUnit2" />
@@ -306,7 +361,7 @@
         })
           .then((response) => {
             if (!response.ok) throw new Error("Server error");
-            return response.blob(); // <--- CRITICAL: Read response as a FILE (Blob)
+            return response.blob();
           })
           .then((blob) => {
             // 4. Create Download Link
