@@ -2,38 +2,48 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Syllabus Paper Generator</title>
+
+    <!-- Client-side PDF library (fallback if webhook PDF fails) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Segoe+UI&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+
     <style>
-      /* --- GLOBAL RESET (Fixes the "going out" issue) --- */
+      /* --- GLOBAL STYLES --- */
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-
       :root {
         --primary-color: #4a90e2;
-        --success-color: #28a745;
         --bg-color: #f4f7f6;
         --container-bg: #ffffff;
         --text-color: #333;
         --border-color: #ddd;
       }
-
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Segoe UI", "Noto Sans Sinhala", sans-serif;
         background-color: var(--bg-color);
-        color: var(--text-color);
-        display: flex;
-        justify-content: center;
-        align-items: flex-start; /* Better for mobile scrolling */
         min-height: 100vh;
-        margin: 0;
-        padding: 20px;
       }
 
+      /* --- INPUT FORM STYLES --- */
+      #input-view-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        width: 100%;
+      }
       .container {
         background-color: var(--container-bg);
         padding: 40px;
@@ -41,33 +51,27 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 600px;
-        margin-bottom: 40px; /* Space at bottom for scrolling */
+        margin-bottom: 40px;
       }
-
       h2 {
         text-align: center;
         color: var(--primary-color);
         margin-bottom: 30px;
-        margin-top: 0;
       }
 
       .form-group {
         margin-bottom: 20px;
         width: 100%;
       }
-
       .form-row {
         display: flex;
         gap: 20px;
       }
-
       label {
         display: block;
         margin-bottom: 8px;
         font-weight: 600;
       }
-
-      /* Inputs */
       input[type="text"],
       textarea,
       select {
@@ -75,11 +79,9 @@
         padding: 12px;
         border: 1px solid var(--border-color);
         border-radius: 6px;
-        font-size: 16px; /* Prevents iOS auto-zoom */
         font-family: inherit;
+        font-size: 14px;
       }
-
-      /* Unit Box Styling (Replaces inline styles) */
       .unit-box {
         border: 1px solid #ddd;
         padding: 20px;
@@ -87,28 +89,6 @@
         margin-bottom: 20px;
         background-color: #fafafa;
       }
-
-      .unit-label {
-        color: #4a90e2;
-        font-weight: bold;
-        margin-bottom: 10px;
-        display: block;
-      }
-
-      /* File Input Style - strict max-width */
-      input[type="file"] {
-        display: block;
-        width: 100%;
-        max-width: 100%;
-        padding: 10px;
-        background: white;
-        border: 1px dashed var(--border-color);
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-      }
-
-      /* Buttons */
       .submit-btn {
         width: 100%;
         padding: 15px;
@@ -116,40 +96,131 @@
         color: white;
         border: none;
         border-radius: 6px;
-        font-size: 16px;
         font-weight: bold;
         cursor: pointer;
         display: block;
-        text-align: center;
-        text-decoration: none;
-        transition: background-color 0.2s;
       }
-      .submit-btn:hover {
-        background-color: #357abd;
-      }
-
-      .download-btn {
-        background-color: var(--success-color);
-        margin-top: 15px;
-      }
-      .download-btn:hover {
-        background-color: #218838;
-      }
-
-      /* Helpers */
-      .hidden {
-        display: none !important;
-      }
-      .or-divider {
+      .or-divider-form {
         text-align: center;
         margin: 15px 0;
         font-weight: bold;
         color: #888;
         font-size: 0.85em;
-        text-transform: uppercase;
+      }
+      .hidden {
+        display: none !important;
       }
 
-      /* Loading Spinner */
+      /* --- PAPER PREVIEW STYLES (A4) --- */
+      #paper-view-container {
+        display: none;
+        width: 100%;
+        justify-content: center;
+        padding: 30px;
+        padding-top: 80px;
+      }
+      .paper-page {
+        background: #fff;
+        width: 210mm; /* A4 Width */
+        min-height: 297mm; /* A4 Height */
+        padding: 20mm; /* A4 Margins */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        color: black;
+        box-sizing: border-box;
+      }
+
+      /* Paper Header & Content */
+      .header-box {
+        border: 1px solid #000;
+        padding: 15px;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+      }
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 5px;
+        page-break-after: avoid;
+      }
+      .section-tag {
+        background: #000;
+        color: #fff;
+        padding: 5px 15px;
+        font-weight: bold;
+      }
+      .mcq-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px 20px;
+        padding-left: 20px;
+        font-size: 13px;
+        margin-top: 10px;
+      }
+      .q-block {
+        margin-bottom: 20px;
+        page-break-inside: avoid;
+      }
+      .footer {
+        margin-top: auto;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+        font-size: 10px;
+        color: #777;
+        text-align: center;
+      }
+
+      /* Floating Toolbar */
+      .toolbar {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #fff;
+        padding: 8px 15px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        gap: 10px;
+        z-index: 999;
+        border: 1px solid #ccc;
+        align-items: center;
+      }
+      .download-btn {
+        background-color: #000 !important;
+        color: white !important;
+        border-radius: 20px !important;
+        padding: 8px 16px !important;
+        font-weight: bold;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        cursor: pointer;
+        border: none;
+      }
+
+      /* Loading Overlay */
+      #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
       .spinner {
         border: 5px solid #f3f3f3;
         border-top: 5px solid var(--primary-color);
@@ -157,7 +228,7 @@
         width: 50px;
         height: 50px;
         animation: spin 1s linear infinite;
-        margin: 0 auto 20px auto;
+        margin-bottom: 20px;
       }
       @keyframes spin {
         0% {
@@ -168,78 +239,39 @@
         }
       }
 
-      .success-icon {
-        font-size: 50px;
-        color: var(--success-color);
-        margin-bottom: 20px;
-      }
-      #success-wrapper {
-        text-align: center;
-      }
-
-      /* --- MOBILE OPTIMIZATION --- */
-      @media (max-width: 600px) {
-        body {
-          padding: 10px;
-        }
-
-        .container {
-          padding: 20px 15px; /* Tighter padding on mobile */
-          margin-top: 10px;
-        }
-
-        h2 {
-          font-size: 1.5rem;
-          margin-bottom: 20px;
-        }
-
-        .form-row {
-          flex-direction: column;
-          gap: 0;
-        }
-
-        /* Adjust internal padding of Unit boxes for mobile */
-        .unit-box {
-          padding: 12px;
-        }
-
-        /* Ensure inputs never overflow */
-        input,
-        select,
-        textarea {
-          max-width: 100%;
-        }
+      /* small utility */
+      .notice {
+        margin: 8px 0;
+        color: #444;
+        font-size: 13px;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div id="form-wrapper">
+    <div id="input-view-container">
+      <div class="container">
         <h2>Course Syllabus Entry</h2>
+        <div class="notice">
+          If the server webhooks are unreachable (network/CORS), this page will
+          automatically fall back to client-side generation.
+        </div>
         <form id="syllabusForm">
           <div class="form-group">
-            <label>Subject Name with Code</label>
-            <input
-              type="text"
-              id="subjectDetails"
-              name="subjectDetails"
-              required
-            />
+            <label>Subject Name</label>
+            <input type="text" id="subjectDetails" required />
           </div>
-
           <div class="form-row">
             <div class="form-group">
               <label>Language</label>
-              <select id="language" name="language">
+              <select id="language">
                 <option value="english">English</option>
                 <option value="sinhala">Sinhala</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Difficulty Level</label>
-              <select id="level" name="level">
+              <label>Difficulty</label>
+              <select id="level">
                 <option value="medium">Medium</option>
-                <option value="easy">Easy</option>
                 <option value="hard">Hard</option>
               </select>
             </div>
@@ -249,139 +281,441 @@
             <label class="unit-label">Unit 01</label>
             <textarea
               id="syllabusUnit1"
-              placeholder="Paste text here..."
               rows="4"
+              placeholder="Enter syllabus for unit 1"
             ></textarea>
-            <div class="or-divider">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit1" />
+            <div class="or-divider-form">- OR UPLOAD FILE -</div>
+            <input type="file" id="fileUnit1" accept=".txt,.pdf,.docx" />
           </div>
 
           <div class="unit-box">
             <label class="unit-label">Unit 02</label>
             <textarea
               id="syllabusUnit2"
-              placeholder="Paste text here..."
               rows="4"
+              placeholder="Enter syllabus for unit 2"
             ></textarea>
-            <div class="or-divider">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit2" />
+            <div class="or-divider-form">- OR UPLOAD FILE -</div>
+            <input type="file" id="fileUnit2" accept=".txt,.pdf,.docx" />
           </div>
 
           <button type="submit" class="submit-btn">Generate Paper</button>
         </form>
       </div>
+    </div>
 
-      <div id="loading-wrapper" class="hidden" style="text-align: center">
-        <div class="spinner"></div>
-        <h3>Generating Paper...</h3>
-        <p>Please wait. Do not close this tab.</p>
+    <div id="paper-view-container">
+      <div class="toolbar">
+        <button type="button" onclick="document.execCommand('bold',false,null)">
+          <span class="material-symbols-outlined">format_bold</span>
+        </button>
+        <button
+          type="button"
+          onclick="document.execCommand('italic',false,null)"
+        >
+          <span class="material-symbols-outlined">format_italic</span>
+        </button>
+        <button type="button" id="btn-download-pdf" class="download-btn">
+          <span class="material-symbols-outlined">download</span> Download PDF
+        </button>
+        <button
+          type="button"
+          onclick="location.reload()"
+          style="
+            font-size: 12px;
+            color: red;
+            margin-left: 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+          "
+        >
+          New
+        </button>
       </div>
 
-      <div id="success-wrapper" class="hidden">
-        <div class="success-icon">✔</div>
-        <h3>Paper Ready!</h3>
-        <p>Your document has been generated successfully.</p>
+      <div
+        class="paper-page"
+        id="paper-content"
+        contenteditable="true"
+        spellcheck="false"
+      >
+        <div class="header-box">
+          <div>
+            <strong>Subject:</strong> <span id="paper-subject"></span><br />
+            <strong>College:</strong> TUTO LEARNING COLLEGE<br />
+            <strong>Code:</strong> 1122
+          </div>
+          <div style="text-align: right">
+            <strong>Date:</strong> <span id="paper-date"></span><br />
+            <strong>Time:</strong> 2 Hours
+          </div>
+        </div>
 
-        <a
-          id="download-link"
-          class="submit-btn download-btn"
-          href="#"
-          download="Generated_Paper.pdf"
-        >
-          Download PDF Now
-        </a>
+        <div class="section-header">
+          <span class="section-tag">PART A</span
+          ><span class="marks-info">(MCQ Questions)</span>
+        </div>
+        <div id="part-a-container"></div>
 
-        <br />
-        <a
-          href="#"
-          onclick="location.reload()"
-          style="color: #999; font-size: 0.9em"
-          >Create Another</a
+        <div
+          class="section-header"
+          style="
+            margin-top: 40px;
+            border-top: 1px dashed #ccc;
+            padding-top: 20px;
+          "
         >
+          <span class="section-tag">PART B</span
+          ><span class="marks-info">(Structured Essay)</span>
+        </div>
+        <div id="part-b-container"></div>
+
+        <div
+          class="section-header"
+          style="
+            margin-top: 40px;
+            border-top: 1px dashed #ccc;
+            padding-top: 20px;
+          "
+        >
+          <span class="section-tag">PART C</span
+          ><span class="marks-info">(Case Study)</span>
+        </div>
+        <div id="part-c-container"></div>
+
+        <div class="footer">
+          Generated on: <span id="footer-date"></span> | Template by TUTO
+          LEARNING COLLEGE
+        </div>
       </div>
     </div>
 
+    <div id="loading-overlay" class="hidden">
+      <div class="spinner"></div>
+      <h3 id="loading-text">Processing...</h3>
+    </div>
+
     <script>
-      const form = document.getElementById("syllabusForm");
-      const formWrapper = document.getElementById("form-wrapper");
-      const loadingWrapper = document.getElementById("loading-wrapper");
-      const successWrapper = document.getElementById("success-wrapper");
-      const downloadLink = document.getElementById("download-link");
+      document.addEventListener("DOMContentLoaded", function () {
+        // --- CONFIGURATION ---
+        // Keep your webhooks here; we will TRY them but automatically fallback to client-side behavior
+        const WEBHOOK_URL_1 =
+          "https://n8n.n8yland.me/webhook/18817b49-3d58-4b53-8e7b-901e35cc4e19";
+        const WEBHOOK_URL_2 =
+          "https://n8n.n8yland.me/webhook/2fbd818a-f9d3-4c16-8b4e-e03dbbc008bd";
 
-      // >>> REPLACE WITH YOUR WEBHOOK URL <<<
-      const WEBHOOK_URL =
-        "https://n8n.n8yland.me/webhook/18817b49-3d58-4b53-8e7b-901e35cc4e19";
+        const form = document.getElementById("syllabusForm");
+        const downloadBtn = document.getElementById("btn-download-pdf");
+        const overlay = document.getElementById("loading-overlay");
+        const loadingText = document.getElementById("loading-text");
 
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
+        // --- PART 1: GENERATE QUESTIONS ---
+        if (form) {
+          form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            loadingText.innerText = "Generating Questions...";
+            overlay.classList.remove("hidden");
 
-        // 1. Build Data
-        const formData = new FormData();
-        formData.append(
-          "subjectDetails",
-          document.getElementById("subjectDetails").value
-        );
-        formData.append("language", document.getElementById("language").value);
-        formData.append("level", document.getElementById("level").value);
+            const formData = new FormData();
+            formData.append(
+              "subjectDetails",
+              document.getElementById("subjectDetails").value || ""
+            );
+            formData.append(
+              "language",
+              document.getElementById("language").value || "english"
+            );
+            formData.append(
+              "level",
+              document.getElementById("level").value || "medium"
+            );
 
-        // Unit 1 Logic
-        const file1 = document.getElementById("fileUnit1").files[0];
-        if (file1) {
-          formData.append("fileUnit1", file1);
-          formData.append("syllabusUnit1Type", "file");
-        } else {
-          formData.append(
-            "syllabusUnit1",
-            document.getElementById("syllabusUnit1").value
-          );
-          formData.append("syllabusUnit1Type", "text");
-        }
+            // Unit 1 File Logic (we only attach file if present)
+            const f1 = document.getElementById("fileUnit1").files[0];
+            if (f1) {
+              formData.append("fileUnit1", f1);
+              formData.append("syllabusUnit1Type", "file");
+            } else {
+              formData.append(
+                "syllabusUnit1",
+                document.getElementById("syllabusUnit1").value || ""
+              );
+              formData.append("syllabusUnit1Type", "text");
+            }
 
-        // Unit 2 Logic
-        const file2 = document.getElementById("fileUnit2").files[0];
-        if (file2) {
-          formData.append("fileUnit2", file2);
-          formData.append("syllabusUnit2Type", "file");
-        } else {
-          formData.append(
-            "syllabusUnit2",
-            document.getElementById("syllabusUnit2").value
-          );
-          formData.append("syllabusUnit2Type", "text");
-        }
+            // Unit 2 File Logic
+            const f2 = document.getElementById("fileUnit2").files[0];
+            if (f2) {
+              formData.append("fileUnit2", f2);
+              formData.append("syllabusUnit2Type", "file");
+            } else {
+              formData.append(
+                "syllabusUnit2",
+                document.getElementById("syllabusUnit2").value || ""
+              );
+              formData.append("syllabusUnit2Type", "text");
+            }
 
-        // 2. Show Loading
-        formWrapper.classList.add("hidden");
-        loadingWrapper.classList.remove("hidden");
+            // Try server webhook first. If it fails (network/CORS) we fall back to a local generator.
+            let usedFallback = false;
+            try {
+              const res = await fetch(WEBHOOK_URL_1, {
+                method: "POST",
+                body: formData,
+              });
 
-        // 3. Send & Wait for File Response
-        fetch(WEBHOOK_URL, {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => {
-            if (!response.ok) throw new Error("Server error");
-            return response.blob();
-          })
-          .then((blob) => {
-            // 4. Create Download Link
-            const url = window.URL.createObjectURL(blob);
-            downloadLink.href = url;
+              if (!res.ok) {
+                // Non-2xx response — attempt to read error text for debugging then fallback
+                const errText = await res
+                  .text()
+                  .catch(() => "(no response body)");
+                console.warn(
+                  "Webhook returned non-OK status",
+                  res.status,
+                  errText
+                );
+                throw new Error(`Webhook error ${res.status}: ${errText}`);
+              }
 
-            // Set filename based on subject
-            const subjectName =
-              document.getElementById("subjectDetails").value || "Paper";
-            downloadLink.download =
-              subjectName.replace(/\s+/g, "_") + "_Paper.pdf";
+              // Parse JSON — if this fails we'll catch and fallback
+              const data = await res.json();
 
-            // 5. Show Success Screen
-            loadingWrapper.classList.add("hidden");
-            successWrapper.classList.remove("hidden");
-          })
-          .catch((error) => {
-            alert("Error: Could not generate paper. Check n8n console.");
-            location.reload();
+              populatePaper(data);
+            } catch (err) {
+              // Common cause: TypeError: Failed to fetch (network/CORS). Provide honest fallback and console info.
+              console.error(
+                "Primary webhook failed; falling back to local generator:",
+                err
+              );
+              usedFallback = true;
+
+              const fallbackData = generateQuestionsFromSyllabus(
+                document.getElementById("syllabusUnit1").value,
+                document.getElementById("syllabusUnit2").value
+              );
+              populatePaper(fallbackData);
+
+              // Inform the user gently
+              alert(
+                "Server webhook unreachable. Generated a local draft instead.\nCheck the browser console for details."
+              );
+            } finally {
+              // Switch to Paper View in either case
+              document.getElementById("input-view-container").style.display =
+                "none";
+              document.getElementById("paper-view-container").style.display =
+                "flex";
+              document.body.style.backgroundColor = "#525659"; // Grey background
+              overlay.classList.add("hidden");
+            }
           });
+        }
+
+        // --- PART 2: GENERATE PDF ---
+        if (downloadBtn) {
+          downloadBtn.addEventListener("click", async function () {
+            loadingText.innerText = "Creating PDF...";
+            overlay.classList.remove("hidden");
+
+            // Build HTML for PDF service (keep it simple)
+            const inlineStyles = Array.from(document.querySelectorAll("style"))
+              .map((el) => el.outerHTML)
+              .join("");
+            const content = document.getElementById("paper-content").innerHTML;
+            const finalHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">${inlineStyles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:#fff}.paper-page{width:210mm;min-height:297mm;padding:20mm;box-sizing:border-box}.q-block,.section-header,.header-box{page-break-inside:avoid}</style></head><body><div class="paper-page">${content}</div></body></html>`;
+
+            try {
+              const res = await fetch(WEBHOOK_URL_2, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ html: finalHtml }),
+              });
+
+              if (!res.ok) {
+                const errText = await res
+                  .text()
+                  .catch(() => "(no response body)");
+                throw new Error(`PDF webhook error ${res.status}: ${errText}`);
+              }
+
+              const blob = await res.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download =
+                (document.getElementById("subjectDetails").value || "Paper") +
+                ".pdf";
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+            } catch (err) {
+              // Fallback: use client-side html2pdf to generate PDF (works without server)
+              console.error(
+                "PDF webhook failed, falling back to client-side PDF generation:",
+                err
+              );
+              alert(
+                "PDF webhook failed (network/CORS). Falling back to client-side PDF generation."
+              );
+
+              try {
+                // Use html2pdf to generate PDF from the #paper-content element
+                const element = document.getElementById("paper-content");
+                const opt = {
+                  margin: 10,
+                  filename:
+                    (document.getElementById("subjectDetails").value ||
+                      "Paper") + ".pdf",
+                  image: { type: "jpeg", quality: 0.98 },
+                  html2canvas: { scale: 2 },
+                  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                };
+                // NOTE: html2pdf returns a Promise when save() is called
+                html2pdf()
+                  .set(opt)
+                  .from(element)
+                  .save()
+                  .finally(() => overlay.classList.add("hidden"));
+                return; // early return; overlay hidden in finally
+              } catch (clientErr) {
+                console.error("Client-side PDF generation failed:", clientErr);
+                alert(
+                  "Both server-side and client-side PDF generation failed. See console for details."
+                );
+              }
+            } finally {
+              overlay.classList.add("hidden");
+            }
+          });
+        }
+
+        // --- HELPER FUNCTION: POPULATE DATA ---
+        function populatePaper(data) {
+          // Safe population with fallbacks
+          document.getElementById("paper-subject").innerText =
+            document.getElementById("subjectDetails").value ||
+            data.subject ||
+            "";
+          const today = new Date().toLocaleDateString();
+          document.getElementById("paper-date").innerText = today;
+          document.getElementById("footer-date").innerText = today;
+
+          // Part A (MCQ)
+          const divA = document.getElementById("part-a-container");
+          divA.innerHTML = "";
+
+          if (data.QuestionsA && Array.isArray(data.QuestionsA)) {
+            data.QuestionsA.forEach((q, i) => {
+              const opts = [q.option_1, q.option_2, q.option_3, q.option_4]
+                .map((o, x) =>
+                  o
+                    ? `<div>${["a", "b", "c", "d"][x]}) ${escapeHtml(
+                        String(o)
+                      )}</div>`
+                    : ""
+                )
+                .join("");
+              divA.innerHTML += `<div class=\"q-block\"><div class=\"q-text\">${
+                i + 1
+              }. ${escapeHtml(
+                String(q.question || "")
+              )}</div><div class=\"mcq-grid\">${opts}</div></div>`;
+            });
+          } else if (data.questions && Array.isArray(data.questions)) {
+            // fallback if webhook uses different key
+            data.questions.forEach((q, i) => {
+              divA.innerHTML += `<div class=\"q-block\">${escapeHtml(
+                String(q)
+              )}</div>`;
+            });
+          } else if (data.generated && Array.isArray(data.generated.MCQs)) {
+            // our local fallback format
+            data.generated.MCQs.forEach((q, i) => {
+              const opts = q.options
+                .map(
+                  (o, idx) =>
+                    `<div>${["a", "b", "c", "d"][idx]}) ${escapeHtml(o)}</div>`
+                )
+                .join("");
+              divA.innerHTML += `<div class=\"q-block\"><div class=\"q-text\">${
+                i + 1
+              }. ${escapeHtml(
+                q.question
+              )}</div><div class=\"mcq-grid\">${opts}</div></div>`;
+            });
+          } else {
+            divA.innerHTML =
+              '<div class="q-block">No MCQs returned by the server.</div>';
+          }
+
+          // Part B & C (Structured/Essay)
+          const fillSec = (arr, el) => {
+            el.innerHTML = "";
+            if (arr && Array.isArray(arr)) {
+              arr.forEach((q, i) => {
+                el.innerHTML += `<div class=\"q-block\"><div class=\"q-text\">Q${
+                  i + 1
+                }. ${escapeHtml(
+                  String(q)
+                )}</div><br><div style=\"border-bottom:1px dotted #ccc;height:30px\"></div><div style=\"border-bottom:1px dotted #ccc;height:30px\"></div></div>`;
+              });
+            } else if (data.generated && Array.isArray(data.generated.essays)) {
+              data.generated.essays.forEach((q, i) => {
+                el.innerHTML += `<div class=\"q-block\"><div class=\"q-text\">Q${
+                  i + 1
+                }. ${escapeHtml(
+                  q
+                )}</div><br><div style=\"border-bottom:1px dotted #ccc;height:30px\"></div><div style=\"border-bottom:1px dotted #ccc;height:30px\"></div></div>`;
+              });
+            }
+          };
+
+          fillSec(data.QuestionsB, document.getElementById("part-b-container"));
+          fillSec(data.QuestionsC, document.getElementById("part-c-container"));
+        }
+
+        // Local fallback question generator (very simple heuristic)
+        function generateQuestionsFromSyllabus(unit1, unit2) {
+          const text = (unit1 || "") + "\n" + (unit2 || "");
+          // split into sentences and pick up to 10 seeds
+          const sentences = text
+            .split(/[\.\n]/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+          const mcqs = [];
+          for (let i = 0; i < Math.min(7, sentences.length); i++) {
+            const seed = sentences[i];
+            mcqs.push({
+              question: seed.length > 80 ? seed.slice(0, 80) + "..." : seed,
+              options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+            });
+          }
+
+          // ensure at least a few questions exist
+          if (mcqs.length === 0) {
+            mcqs.push({
+              question: "Write briefly about the main topics of the syllabus.",
+              options: ["Topic A", "Topic B", "Topic C", "Topic D"],
+            });
+          }
+
+          const essays = sentences
+            .slice(7, 10)
+            .map((s) => s || "Explain the above topic.");
+
+          return { generated: { MCQs: mcqs, essays } };
+        }
+
+        // small helper to avoid breaking HTML when injecting strings
+        function escapeHtml(unsafe) {
+          return String(unsafe || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
       });
     </script>
   </body>
