@@ -274,86 +274,69 @@
       /* -------------------------
          RESPONSIVE / MOBILE FIXES
          ------------------------- */
-      @media (max-width: 900px) {
-        .container {
-          padding: 20px;
-          max-width: 720px;
-        }
-        .form-row {
-          flex-direction: column;
-        }
-        .paper-page {
-          width: 100%;
-          min-height: auto;
-          padding: 18px;
-          box-shadow: none;
-        }
-        #paper-view-container {
-          padding-top: 70px;
-        }
-        .toolbar {
-          left: 16px;
-          transform: none;
-          top: 12px;
-          border-radius: 10px;
-        }
-      }
+     @media (max-width: 900px) {
+  .container {
+    padding: 20px;
+    max-width: 720px;
+  }
+  .form-row {
+    flex-direction: column;
+  }
+  .paper-page {
+    width: 100%;
+    min-height: auto;
+    padding: 18px;
+    box-shadow: none;
+  }
+  #paper-view-container {
+    padding-top: 70px;
+  }
+  .toolbar {
+    left: 16px;
+    transform: none;
+    top: 12px;
+    border-radius: 10px;
+    justify-content: center !important; /* ⭐ Keep centered */
+  }
+}
 
-      @media (max-width: 600px) {
-        .container {
-          padding: 16px;
-          border-radius: 8px;
-        }
-        h2 {
-          font-size: 18px;
-        }
-        .header-box {
-          flex-direction: column;
-          gap: 8px;
-          font-size: 13px;
-        }
-        .mcq-grid {
-          grid-template-columns: 1fr;
-        }
-        .toolbar {
-          left: 8px;
-          top: 8px;
-          padding: 6px 8px;
-          gap: 6px;
-        }
-        .download-btn {
-          padding: 6px 10px !important;
-          font-size: 13px;
-        }
-        /* For mobile: scale the A4 preview to fit the screen while keeping layout */
-        #paper-view-container {
-          padding: 12px;
-          overflow: auto;
-        }
-        .paper-page {
-          transform-origin: top center;
-          transform: scale(0.88);
-          max-width: 100%;
-        }
-      }
-
-      /* print optimization */
-      @media print {
-        body {
-          background: #fff;
-        }
-        .toolbar,
-        #loading-overlay,
-        #input-view-container {
-          display: none !important;
-        }
-        .paper-page {
-          box-shadow: none !important;
-          width: auto !important;
-          min-height: auto !important;
-          padding: 0 !important;
-        }
-      }
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+    border-radius: 8px;
+  }
+  h2 {
+    font-size: 18px;
+  }
+  .header-box {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .mcq-grid {
+    grid-template-columns: 1fr;
+  }
+  .toolbar {
+    left: 8px;
+    top: 8px;
+    padding: 6px 8px;
+    gap: 6px;
+    justify-content: center !important; /* ⭐ Keep centered */
+  }
+  .download-btn {
+    padding: 6px 10px !important;
+    font-size: 13px;
+  }
+  #paper-view-container {
+    padding: 12px;
+    overflow: auto;
+  }
+  .paper-page {
+    transform-origin: top center;
+    transform: scale(0.88);
+    max-width: 100%;
+  }
+}
     </style>
   </head>
   <body>
@@ -830,3 +813,4 @@
     </script>
   </body>
 </html>
+
