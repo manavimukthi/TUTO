@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Syllabus Paper Generator</title>
 
-    <!-- Client-side PDF library (fallback if webhook PDF fails) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link
@@ -129,6 +128,8 @@
         flex-direction: column;
         color: black;
         box-sizing: border-box;
+        /* Ensure logic doesn't break if content is long */
+        overflow: hidden; 
       }
 
       /* Paper Header & Content */
@@ -245,6 +246,44 @@
         color: #444;
         font-size: 13px;
       }
+
+      /* --- RESPONSIVE / MOBILE STYLES --- */
+      @media screen and (max-width: 768px) {
+        /* Form Adjustments */
+        .container {
+          padding: 20px;
+          margin: 10px;
+          width: 95%;
+        }
+        .form-row {
+          flex-direction: column;
+          gap: 0;
+        }
+        
+        /* Toolbar Adjustments */
+        .toolbar {
+            width: 90%;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        /* Paper Preview Adjustments 
+           Note: We keep paper width 210mm for correct PDF generation, 
+           but allow scrolling on mobile. */
+        #paper-view-container {
+            display: block; /* Allows scrolling */
+            overflow-x: auto;
+            padding: 10px;
+            padding-top: 100px; /* Space for larger toolbar */
+            justify-content: flex-start;
+        }
+        .paper-page {
+            /* Keep fixed size so PDF is correct, but let user scroll */
+            margin: 0 auto; 
+            min-width: 210mm; 
+        }
+      }
     </style>
   </head>
   <body>
@@ -282,7 +321,7 @@
               placeholder="Enter syllabus for unit 1"
             ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit1" accept=".txt,.pdf,.docx" />
+            <input type="file" id="fileUnit1" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg" />
           </div>
 
           <div class="unit-box">
@@ -293,7 +332,7 @@
               placeholder="Enter syllabus for unit 2"
             ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit2" accept=".txt,.pdf,.docx" />
+            <input type="file" id="fileUnit2" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg" />
           </div>
 
           <button type="submit" class="submit-btn">Generate Paper</button>
@@ -501,8 +540,16 @@
               // Switch to Paper View in either case
               document.getElementById("input-view-container").style.display =
                 "none";
-              document.getElementById("paper-view-container").style.display =
-                "flex";
+              // Update style for view container to ensure it uses flex/block correctly based on media queries handled in CSS
+              const paperContainer = document.getElementById("paper-view-container");
+              
+              // We remove inline style display and let CSS class handle it, or just set it to match CSS expectations
+              if(window.innerWidth > 768) {
+                  paperContainer.style.display = "flex";
+              } else {
+                  paperContainer.style.display = "block";
+              }
+
               document.body.style.backgroundColor = "#525659"; // Grey background
               overlay.classList.add("hidden");
             }
@@ -717,4 +764,3 @@
     </script>
   </body>
 </html>
-
