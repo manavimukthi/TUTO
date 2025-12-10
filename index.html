@@ -35,6 +35,8 @@
         font-family: "Segoe UI", "Noto Sans Sinhala", sans-serif;
         background-color: var(--bg-color);
         min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       /* --- INPUT FORM STYLES --- */
@@ -46,52 +48,62 @@
       }
       .container {
         background-color: var(--container-bg);
-        padding: 40px;
+        padding: 32px;
         border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         width: 100%;
-        max-width: 600px;
+        max-width: 760px;
         margin-bottom: 40px;
       }
       h2 {
         text-align: center;
         color: var(--primary-color);
-        margin-bottom: 30px;
+        margin-bottom: 22px;
+        font-size: 20px;
       }
 
       .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
         width: 100%;
       }
       .form-row {
         display: flex;
-        gap: 20px;
+        gap: 16px;
+      }
+      .form-row .form-group {
+        flex: 1;
       }
       label {
         display: block;
         margin-bottom: 8px;
         font-weight: 600;
+        font-size: 14px;
       }
       input[type="text"],
       textarea,
-      select {
+      select,
+      input[type="file"] {
         width: 100%;
-        padding: 12px;
+        padding: 10px;
         border: 1px solid var(--border-color);
         border-radius: 6px;
         font-family: inherit;
         font-size: 14px;
+        background: #fff;
+      }
+      textarea {
+        resize: vertical;
       }
       .unit-box {
-        border: 1px solid #ddd;
-        padding: 20px;
+        border: 1px solid #e6e6e6;
+        padding: 14px;
         border-radius: 8px;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
         background-color: #fafafa;
       }
       .submit-btn {
         width: 100%;
-        padding: 15px;
+        padding: 14px;
         background-color: var(--primary-color);
         color: white;
         border: none;
@@ -99,10 +111,11 @@
         font-weight: bold;
         cursor: pointer;
         display: block;
+        font-size: 15px;
       }
       .or-divider-form {
         text-align: center;
-        margin: 15px 0;
+        margin: 12px 0;
         font-weight: bold;
         color: #888;
         font-size: 0.85em;
@@ -117,26 +130,27 @@
         width: 100%;
         justify-content: center;
         padding: 30px;
-        padding-top: 80px;
+        padding-top: 90px;
       }
+
+      /* Default: show true A4 size on large screens */
       .paper-page {
         background: #fff;
         width: 210mm; /* A4 Width */
         min-height: 297mm; /* A4 Height */
         padding: 20mm; /* A4 Margins */
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
         display: flex;
         flex-direction: column;
         color: black;
         box-sizing: border-box;
-        overflow: hidden;
       }
 
       /* Paper Header & Content */
       .header-box {
         border: 1px solid #000;
-        padding: 15px;
-        margin-bottom: 25px;
+        padding: 12px;
+        margin-bottom: 22px;
         display: flex;
         justify-content: space-between;
         font-size: 14px;
@@ -145,28 +159,29 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 25px;
-        margin-bottom: 15px;
+        margin-top: 22px;
+        margin-bottom: 12px;
         border-bottom: 2px solid #333;
-        padding-bottom: 5px;
+        padding-bottom: 6px;
         page-break-after: avoid;
       }
       .section-tag {
         background: #000;
         color: #fff;
-        padding: 5px 15px;
+        padding: 6px 14px;
         font-weight: bold;
+        font-size: 13px;
       }
       .mcq-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 5px 20px;
-        padding-left: 20px;
+        gap: 6px 16px;
+        padding-left: 10px;
         font-size: 13px;
-        margin-top: 10px;
+        margin-top: 8px;
       }
       .q-block {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
         page-break-inside: avoid;
       }
       .footer {
@@ -178,41 +193,39 @@
         text-align: center;
       }
 
-      /* Image styling inside paper */
-      .paper-page img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        margin: 12px 0;
-        border: 1px solid #ccc;
-        padding: 4px;
-        border-radius: 6px;
-      }
-
       /* Floating Toolbar */
       .toolbar {
         position: fixed;
-        top: 20px;
+        top: 18px;
         left: 50%;
         transform: translateX(-50%);
         background: #fff;
-        padding: 8px 15px;
-        border-radius: 50px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        padding: 6px 12px;
+        border-radius: 999px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
         display: flex;
-        gap: 10px;
+        gap: 8px;
         z-index: 999;
         border: 1px solid #ccc;
         align-items: center;
+      }
+      .toolbar button {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
       .download-btn {
         background-color: #000 !important;
         color: white !important;
         border-radius: 20px !important;
-        padding: 8px 16px !important;
+        padding: 8px 14px !important;
         font-weight: bold;
         display: flex;
-        gap: 5px;
+        gap: 6px;
         align-items: center;
         cursor: pointer;
         border: none;
@@ -225,7 +238,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.75);
         z-index: 2000;
         color: white;
         display: flex;
@@ -258,49 +271,87 @@
         font-size: 13px;
       }
 
-      /* --- MOBILE RESPONSIVE FIXES --- */
-      @media (max-width: 1024px) {
+      /* -------------------------
+         RESPONSIVE / MOBILE FIXES
+         ------------------------- */
+      @media (max-width: 900px) {
+        .container {
+          padding: 20px;
+          max-width: 720px;
+        }
+        .form-row {
+          flex-direction: column;
+        }
         .paper-page {
           width: 100%;
           min-height: auto;
-          padding: 16px;
+          padding: 18px;
           box-shadow: none;
         }
-      }
-      @media (max-width: 768px) {
-        .container {
-          padding: 20px;
-          margin: 10px;
-        }
-
-        .form-row {
-          flex-direction: column;
-          gap: 0px;
-        }
-
         #paper-view-container {
-          padding: 10px;
           padding-top: 70px;
         }
-
         .toolbar {
-          top: 10px;
-          width: 95%;
-          left: 50%;
-          transform: translateX(-50%);
-          padding: 6px 10px;
-          border-radius: 12px;
-          flex-wrap: wrap;
+          left: 16px;
+          transform: none;
+          top: 12px;
+          border-radius: 10px;
         }
+      }
 
+      @media (max-width: 600px) {
+        .container {
+          padding: 16px;
+          border-radius: 8px;
+        }
+        h2 {
+          font-size: 18px;
+        }
+        .header-box {
+          flex-direction: column;
+          gap: 8px;
+          font-size: 13px;
+        }
+        .mcq-grid {
+          grid-template-columns: 1fr;
+        }
+        .toolbar {
+          left: 8px;
+          top: 8px;
+          padding: 6px 8px;
+          gap: 6px;
+        }
         .download-btn {
           padding: 6px 10px !important;
-          font-size: 11px;
+          font-size: 13px;
         }
-
-        img {
+        /* For mobile: scale the A4 preview to fit the screen while keeping layout */
+        #paper-view-container {
+          padding: 12px;
+          overflow: auto;
+        }
+        .paper-page {
+          transform-origin: top center;
+          transform: scale(0.88);
           max-width: 100%;
-          height: auto;
+        }
+      }
+
+      /* print optimization */
+      @media print {
+        body {
+          background: #fff;
+        }
+        .toolbar,
+        #loading-overlay,
+        #input-view-container {
+          display: none !important;
+        }
+        .paper-page {
+          box-shadow: none !important;
+          width: auto !important;
+          min-height: auto !important;
+          padding: 0 !important;
         }
       }
     </style>
@@ -341,7 +392,12 @@
               placeholder="Enter syllabus for unit 1"
             ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit1" accept=".txt,.pdf,.docx" />
+            <!-- Accept images + documents -->
+            <input
+              type="file"
+              id="fileUnit1"
+              accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"
+            />
           </div>
 
           <div class="unit-box">
@@ -352,18 +408,12 @@
               placeholder="Enter syllabus for unit 2"
             ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit2" accept=".txt,.pdf,.docx" />
-          </div>
-
-          <!-- NEW: Image Upload -->
-          <div class="unit-box">
-            <label>Upload Images (Optional)</label>
-            <input type="file" id="imgUpload" accept="image/*" multiple />
-            <div class="notice">
-              Uploaded images will appear at the end of the paper. You can move
-              them inside the editable paper. Images are sent to the webhook if
-              available.
-            </div>
+            <!-- Accept images + documents -->
+            <input
+              type="file"
+              id="fileUnit2"
+              accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"
+            />
           </div>
 
           <button type="submit" class="submit-btn">Generate Paper</button>
@@ -391,7 +441,7 @@
           style="
             font-size: 12px;
             color: red;
-            margin-left: 10px;
+            margin-left: 8px;
             border: none;
             background: none;
             cursor: pointer;
@@ -451,9 +501,6 @@
         </div>
         <div id="part-c-container"></div>
 
-        <!-- Uploaded images will be appended here if any -->
-        <div id="uploaded-images-container"></div>
-
         <div class="footer">
           Generated on: <span id="footer-date"></span> | Template by TUTO
           LEARNING COLLEGE
@@ -480,48 +527,7 @@
         const overlay = document.getElementById("loading-overlay");
         const loadingText = document.getElementById("loading-text");
 
-        // --- PART 0: Helper references
-        const imgInput = document.getElementById("imgUpload");
-        const uploadedImagesContainer = document.getElementById(
-          "uploaded-images-container"
-        );
-
-        // --- PART 1: IMAGE UPLOAD PREVIEW & SIMPLE HANDLING ---
-        // When user selects images, display previews in the editable paper area
-        if (imgInput) {
-          imgInput.addEventListener("change", function (e) {
-            const files = Array.from(e.target.files || []);
-            if (files.length === 0) return;
-            // For each file, create a preview in the paper content
-            files.forEach((file) => {
-              // Only accept images (defensive)
-              if (!file.type.startsWith("image/")) return;
-              const reader = new FileReader();
-              reader.onload = function (ev) {
-                // Create an image element and append to the uploaded images container
-                const img = document.createElement("img");
-                img.src = ev.target.result;
-                img.alt = file.name || "Uploaded image";
-                img.draggable = false;
-                // small caption (optional)
-                const wrap = document.createElement("div");
-                wrap.style.marginBottom = "8px";
-                wrap.appendChild(img);
-                uploadedImagesContainer.appendChild(wrap);
-                // Also append image into paper-content so the content includes it for PDF
-                // (we append a clone to keep uploaded-images-container separate)
-                const contentArea = document.getElementById("paper-content");
-                const clone = img.cloneNode();
-                clone.style.maxWidth = "100%";
-                clone.style.margin = "12px 0";
-                contentArea.appendChild(clone);
-              };
-              reader.readAsDataURL(file);
-            });
-          });
-        }
-
-        // --- PART 2: GENERATE QUESTIONS ---
+        // --- PART 1: GENERATE QUESTIONS ---
         if (form) {
           form.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -566,15 +572,6 @@
                 document.getElementById("syllabusUnit2").value || ""
               );
               formData.append("syllabusUnit2Type", "text");
-            }
-
-            // --- NEW: Attach uploaded images to formData as well (images[])
-            const imageFiles = Array.from(document.getElementById("imgUpload").files || []);
-            if (imageFiles.length > 0) {
-              imageFiles.forEach((imgFile, idx) => {
-                // Use images[] so server can accept many
-                formData.append("images[]", imgFile, imgFile.name || `image${idx}`);
-              });
             }
 
             // Try server webhook first. If it fails (network/CORS) we fall back to a local generator.
@@ -632,7 +629,7 @@
           });
         }
 
-        // --- PART 3: GENERATE PDF ---
+        // --- PART 2: GENERATE PDF ---
         if (downloadBtn) {
           downloadBtn.addEventListener("click", async function () {
             loadingText.innerText = "Creating PDF...";
@@ -642,7 +639,6 @@
             const inlineStyles = Array.from(document.querySelectorAll("style"))
               .map((el) => el.outerHTML)
               .join("");
-            // We use innerHTML of the paper-content - this contains any uploaded images as data URLs
             const content = document.getElementById("paper-content").innerHTML;
             const finalHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">${inlineStyles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:#fff}.paper-page{width:210mm;min-height:297mm;padding:20mm;box-sizing:border-box}.q-block,.section-header,.header-box{page-break-inside:avoid}</style></head><body><div class="paper-page">${content}</div></body></html>`;
 
@@ -737,8 +733,9 @@
                     : ""
                 )
                 .join("");
-              divA.innerHTML += `<div class="q-block"><div class="q-text">${i +
-                1}. ${escapeHtml(String(q.question || ""))}</div><div class="mcq-grid">${opts}</div></div>`;
+              divA.innerHTML += `<div class="q-block"><div class="q-text">${
+                i + 1
+              }. ${escapeHtml(String(q.question || ""))}</div><div class="mcq-grid">${opts}</div></div>`;
             });
           } else if (data.questions && Array.isArray(data.questions)) {
             // fallback if webhook uses different key
@@ -754,8 +751,9 @@
                     `<div>${["a", "b", "c", "d"][idx]}) ${escapeHtml(o)}</div>`
                 )
                 .join("");
-              divA.innerHTML += `<div class="q-block"><div class="q-text">${i +
-                1}. ${escapeHtml(q.question)}</div><div class="mcq-grid">${opts}</div></div>`;
+              divA.innerHTML += `<div class="q-block"><div class="q-text">${
+                i + 1
+              }. ${escapeHtml(q.question)}</div><div class="mcq-grid">${opts}</div></div>`;
             });
           } else {
             divA.innerHTML =
@@ -777,37 +775,14 @@
                   i + 1
                 }. ${escapeHtml(q)}</div><br><div style="border-bottom:1px dotted #ccc;height:30px"></div><div style="border-bottom:1px dotted #ccc;height:30px"></div></div>`;
               });
+            } else {
+              // fallback placeholder
+              el.innerHTML = `<div class="q-block">No items available.</div>`;
             }
           };
 
           fillSec(data.QuestionsB, document.getElementById("part-b-container"));
           fillSec(data.QuestionsC, document.getElementById("part-c-container"));
-
-          // If server returned images as data URLs or URLs, try to append them
-          // Accepts data.images (array of URLs/base64 strings) OR data.images[] from server response
-          try {
-            const uploadCont = document.getElementById("uploaded-images-container");
-            // Clear previously added images (we preserve those user-uploaded already in content)
-            // Only add server-provided images if present
-            if (data.images && Array.isArray(data.images)) {
-              data.images.forEach((imgSrc) => {
-                if (!imgSrc) return;
-                const img = document.createElement("img");
-                img.src = imgSrc;
-                img.alt = "Server image";
-                uploadedImagesContainer.appendChild(img);
-                // also append to content area
-                const contentArea = document.getElementById("paper-content");
-                const clone = img.cloneNode();
-                clone.style.maxWidth = "100%";
-                clone.style.margin = "12px 0";
-                contentArea.appendChild(clone);
-              });
-            }
-          } catch (err) {
-            // silently ignore image append errors
-            console.warn("Could not append server images:", err);
-          }
         }
 
         // Local fallback question generator (very simple heuristic)
