@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Syllabus Paper Generator</title>
 
+    <!-- Client-side PDF library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link
@@ -27,14 +28,14 @@
         --border-color: #ddd;
       }
       body {
-        font-family: "Segoe UI","Noto Sans Sinhala",sans-serif;
+        font-family: "Segoe UI", "Noto Sans Sinhala", sans-serif;
         background-color: var(--bg-color);
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
 
-      /* --- FORM STYLES --- */
+      /* --- INPUT FORM STYLES --- */
       #input-view-container { display: flex; justify-content: center; padding: 20px; width: 100%; }
       .container {
         background-color: var(--container-bg);
@@ -46,25 +47,33 @@
         margin-bottom: 40px;
       }
       h2 { text-align: center; color: var(--primary-color); margin-bottom: 22px; font-size: 20px; }
+
       .form-group { margin-bottom: 16px; width: 100%; }
       .form-row { display: flex; gap: 16px; }
       .form-row .form-group { flex: 1; }
       label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
       input[type="text"], textarea, select, input[type="file"] {
-        width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;
-        font-family: inherit; font-size: 14px; background: #fff;
+        width: 100%; padding: 10px; border: 1px solid var(--border-color);
+        border-radius: 6px; font-family: inherit; font-size: 14px; background: #fff;
       }
       textarea { resize: vertical; }
-      .unit-box { border:1px solid #e6e6e6; padding:14px; border-radius:8px; margin-bottom:16px; background-color:#fafafa; }
-      .submit-btn { width:100%; padding:14px; background-color:var(--primary-color); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:15px; display:block; }
+      .unit-box { border:1px solid #e6e6e6; padding:14px; border-radius:8px; margin-bottom:16px; background:#fafafa; }
+      .submit-btn { width:100%; padding:14px; background-color:var(--primary-color); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; display:block; font-size:15px; }
       .or-divider-form { text-align:center; margin:12px 0; font-weight:bold; color:#888; font-size:0.85em; }
       .hidden { display:none !important; }
 
-      /* --- PAPER PREVIEW STYLES --- */
-      #paper-view-container { display:none; width:100%; justify-content:center; padding:30px; padding-top:90px; }
+      /* --- PAPER PREVIEW STYLES (A4) --- */
+      #paper-view-container { display: none; width: 100%; justify-content: center; padding: 30px; padding-top: 90px; }
       .paper-page {
-        background:#fff; width:210mm; min-height:297mm; padding:20mm;
-        box-shadow:0 5px 15px rgba(0,0,0,0.25); display:flex; flex-direction:column; color:black; box-sizing:border-box;
+        background: #fff;
+        width: 210mm;
+        min-height: 297mm;
+        padding: 20mm;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+        display: flex;
+        flex-direction: column;
+        color: black;
+        box-sizing: border-box;
       }
       .header-box { border:1px solid #000; padding:12px; margin-bottom:22px; display:flex; justify-content:space-between; font-size:14px; }
       .section-header { display:flex; justify-content:space-between; align-items:center; margin-top:22px; margin-bottom:12px; border-bottom:2px solid #333; padding-bottom:6px; page-break-after:avoid; }
@@ -73,40 +82,68 @@
       .q-block { margin-bottom:16px; page-break-inside:avoid; }
       .footer { margin-top:auto; border-top:1px solid #ccc; padding-top:10px; font-size:10px; color:#777; text-align:center; }
 
-      /* --- FLOATING TOOLBAR --- */
+      /* Floating Toolbar */
       .toolbar {
         position: fixed;
-        top: 18px; left:50%;
+        top: 18px;
+        left: 50%;
         transform: translateX(-50%);
-        background:#fff; padding:6px 12px; border-radius:999px;
-        box-shadow:0 4px 12px rgba(0,0,0,0.18); display:flex; gap:8px;
-        z-index:999; border:1px solid #ccc; align-items:center;
+        background: #fff;
+        padding: 6px 12px;
+        border-radius: 999px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+        display: flex;
+        gap: 8px;
+        z-index: 999;
+        border:1px solid #ccc;
+        align-items:center;
       }
       .toolbar button { background:transparent; border:none; cursor:pointer; padding:6px; display:inline-flex; align-items:center; justify-content:center; }
       .download-btn { background-color:#000 !important; color:white !important; border-radius:20px !important; padding:8px 14px !important; font-weight:bold; display:flex; gap:6px; align-items:center; cursor:pointer; border:none; }
 
-      /* --- LOADING OVERLAY --- */
+      /* Loading Overlay */
       #loading-overlay {
-        position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75);
-        z-index:2000; color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; font-size:24px; font-weight:bold;
+        position: fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background: rgba(0,0,0,0.75);
+        z-index:2000;
+        color:white;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
       }
-      .spinner { border:5px solid #f3f3f3; border-top:5px solid var(--primary-color); border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin-bottom:20px; }
+      #loading-overlay.hidden { display:none; }
+      .spinner {
+        border:5px solid #f3f3f3;
+        border-top:5px solid var(--primary-color);
+        border-radius:50%;
+        width:50px;
+        height:50px;
+        animation: spin 1s linear infinite;
+        margin-bottom:20px;
+      }
       @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
 
-      /* --- RESPONSIVE / MOBILE --- */
-      @media (max-width:900px) {
+      /* -------------------------
+         RESPONSIVE / MOBILE FIXES
+         ------------------------- */
+      @media (max-width: 900px) {
         .container { padding:20px; max-width:720px; }
         .form-row { flex-direction:column; }
         .paper-page { width:100%; min-height:auto; padding:18px; box-shadow:none; }
         #paper-view-container { padding-top:70px; }
-        .toolbar { top:12px; left:50%; transform:translateX(-50%) !important; border-radius:10px; justify-content:center !important; }
+        .toolbar { left:50%; transform:translateX(-50%) !important; top:12px; border-radius:10px; justify-content:center !important; }
       }
-      @media (max-width:600px) {
+      @media (max-width: 600px) {
         .container { padding:16px; border-radius:8px; }
         h2 { font-size:18px; }
         .header-box { flex-direction:column; gap:8px; font-size:13px; }
         .mcq-grid { grid-template-columns:1fr; }
-        .toolbar { top:8px; left:50%; transform:translateX(-50%) !important; padding:6px 8px; gap:6px; justify-content:center !important; }
+        .toolbar { left:50%; transform:translateX(-50%) !important; top:8px; padding:6px 8px; gap:6px; justify-content:center !important; }
         .download-btn { padding:6px 10px !important; font-size:13px; }
         #paper-view-container { padding:12px; overflow:auto; }
         .paper-page { transform-origin:top center; transform:scale(0.88); max-width:100%; }
@@ -114,10 +151,10 @@
     </style>
   </head>
   <body>
-    <!-- Page Loader -->
+    <!-- --- LOADING OVERLAY AT START --- -->
     <div id="loading-overlay">
       <div class="spinner"></div>
-      <div id="loading-text">TUTO</div>
+      <h3 id="loading-text">TUTO</h3>
     </div>
 
     <div id="input-view-container" class="hidden">
@@ -150,14 +187,14 @@
             <label class="unit-label">Unit 01</label>
             <textarea id="syllabusUnit1" rows="4" placeholder="Enter syllabus for unit 1"></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit1" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg" />
+            <input type="file" id="fileUnit1" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"/>
           </div>
 
           <div class="unit-box">
             <label class="unit-label">Unit 02</label>
             <textarea id="syllabusUnit2" rows="4" placeholder="Enter syllabus for unit 2"></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit2" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg" />
+            <input type="file" id="fileUnit2" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"/>
           </div>
 
           <button type="submit" class="submit-btn">Generate Paper</button>
@@ -165,7 +202,6 @@
       </div>
     </div>
 
-    <!-- Paper view container (unchanged) -->
     <div id="paper-view-container">
       <div class="toolbar">
         <button type="button" onclick="document.execCommand('bold',false,null)">
@@ -177,26 +213,55 @@
         <button type="button" id="btn-download-pdf" class="download-btn">
           <span class="material-symbols-outlined">download</span> Download PDF
         </button>
-        <button type="button" onclick="location.reload()" style="font-size:12px;color:red;margin-left:8px;border:none;background:none;cursor:pointer;">
-          New
-        </button>
+        <button type="button" onclick="location.reload()" style="font-size:12px;color:red;margin-left:8px;border:none;background:none;cursor:pointer;">New</button>
       </div>
+
       <div class="paper-page" id="paper-content" contenteditable="true" spellcheck="false">
-        <!-- Paper content same as before -->
+        <div class="header-box">
+          <div>
+            <strong>Subject:</strong> <span id="paper-subject"></span><br/>
+            <strong>College:</strong> TUTO LEARNING COLLEGE<br/>
+            <strong>Code:</strong> 1122
+          </div>
+          <div style="text-align:right">
+            <strong>Date:</strong> <span id="paper-date"></span><br/>
+            <strong>Time:</strong> 2 Hours
+          </div>
+        </div>
+        <div class="section-header"><span class="section-tag">PART A</span><span class="marks-info">(MCQ Questions)</span></div>
+        <div id="part-a-container"></div>
+        <div class="section-header" style="margin-top:40px;border-top:1px dashed #ccc;padding-top:20px;">
+          <span class="section-tag">PART B</span><span class="marks-info">(Structured Essay)</span>
+        </div>
+        <div id="part-b-container"></div>
+        <div class="section-header" style="margin-top:40px;border-top:1px dashed #ccc;padding-top:20px;">
+          <span class="section-tag">PART C</span><span class="marks-info">(Case Study)</span>
+        </div>
+        <div id="part-c-container"></div>
+        <div class="footer">Generated on: <span id="footer-date"></span> | Template by TUTO LEARNING COLLEGE</div>
       </div>
     </div>
 
     <script>
-      // Show loader first, then fade to input form
-      window.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-          document.getElementById("loading-overlay").classList.add("hidden");
-          document.getElementById("input-view-container").classList.remove("hidden");
-        }, 1200); // 1.2s TUTO display
+      window.addEventListener("load", () => {
+        // hide loader, show form
+        document.getElementById("loading-overlay").classList.add("hidden");
+        document.getElementById("input-view-container").classList.remove("hidden");
       });
 
-      // The rest of your JS (form submit, PDF generation, helper functions)
-      // Copy your entire previous <script> content here, unchanged
+      // -------------------------------
+      // Keep your existing JS for form submit, PDF generation
+      // This will remain identical to your original code
+      // -------------------------------
+      document.addEventListener("DOMContentLoaded", function () {
+        const overlay = document.getElementById("loading-overlay");
+        const loadingText = document.getElementById("loading-text");
+        const form = document.getElementById("syllabusForm");
+        const downloadBtn = document.getElementById("btn-download-pdf");
+
+        // Full form submission + PDF generation logic...
+        // (Use your existing JS here; unchanged)
+      });
     </script>
   </body>
 </html>
