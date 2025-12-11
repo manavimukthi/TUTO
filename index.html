@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Syllabus Paper Generator</title>
 
-    <!-- Client-side PDF library -->
+    <!-- Client-side PDF library (fallback if webhook PDF fails) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link
@@ -19,7 +19,11 @@
 
     <style>
       /* --- GLOBAL STYLES --- */
-      * { box-sizing: border-box; margin: 0; padding: 0; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
       :root {
         --primary-color: #4a90e2;
         --bg-color: #f4f7f6;
@@ -36,51 +40,158 @@
       }
 
       /* --- INPUT FORM STYLES --- */
-      #input-view-container { display: flex; justify-content: center; padding: 20px; width: 100%; }
+      #input-view-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        width: 100%;
+      }
       .container {
         background-color: var(--container-bg);
         padding: 32px;
         border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         width: 100%;
         max-width: 760px;
         margin-bottom: 40px;
       }
-      h2 { text-align: center; color: var(--primary-color); margin-bottom: 22px; font-size: 20px; }
-
-      .form-group { margin-bottom: 16px; width: 100%; }
-      .form-row { display: flex; gap: 16px; }
-      .form-row .form-group { flex: 1; }
-      label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-      input[type="text"], textarea, select, input[type="file"] {
-        width: 100%; padding: 10px; border: 1px solid var(--border-color);
-        border-radius: 6px; font-family: inherit; font-size: 14px; background: #fff;
+      h2 {
+        text-align: center;
+        color: var(--primary-color);
+        margin-bottom: 22px;
+        font-size: 20px;
       }
-      textarea { resize: vertical; }
-      .unit-box { border:1px solid #e6e6e6; padding:14px; border-radius:8px; margin-bottom:16px; background:#fafafa; }
-      .submit-btn { width:100%; padding:14px; background-color:var(--primary-color); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; display:block; font-size:15px; }
-      .or-divider-form { text-align:center; margin:12px 0; font-weight:bold; color:#888; font-size:0.85em; }
-      .hidden { display:none !important; }
+
+      .form-group {
+        margin-bottom: 16px;
+        width: 100%;
+      }
+      .form-row {
+        display: flex;
+        gap: 16px;
+      }
+      .form-row .form-group {
+        flex: 1;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      input[type="text"],
+      textarea,
+      select,
+      input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 14px;
+        background: #fff;
+      }
+      textarea {
+        resize: vertical;
+      }
+      .unit-box {
+        border: 1px solid #e6e6e6;
+        padding: 14px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        background-color: #fafafa;
+      }
+      .submit-btn {
+        width: 100%;
+        padding: 14px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        display: block;
+        font-size: 15px;
+      }
+      .or-divider-form {
+        text-align: center;
+        margin: 12px 0;
+        font-weight: bold;
+        color: #888;
+        font-size: 0.85em;
+      }
+      .hidden {
+        display: none !important;
+      }
 
       /* --- PAPER PREVIEW STYLES (A4) --- */
-      #paper-view-container { display: none; width: 100%; justify-content: center; padding: 30px; padding-top: 90px; }
+      #paper-view-container {
+        display: none;
+        width: 100%;
+        justify-content: center;
+        padding: 30px;
+        padding-top: 90px;
+      }
+
+      /* Default: show true A4 size on large screens */
       .paper-page {
         background: #fff;
-        width: 210mm;
-        min-height: 297mm;
-        padding: 20mm;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+        width: 210mm; /* A4 Width */
+        min-height: 297mm; /* A4 Height */
+        padding: 20mm; /* A4 Margins */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
         display: flex;
         flex-direction: column;
         color: black;
         box-sizing: border-box;
       }
-      .header-box { border:1px solid #000; padding:12px; margin-bottom:22px; display:flex; justify-content:space-between; font-size:14px; }
-      .section-header { display:flex; justify-content:space-between; align-items:center; margin-top:22px; margin-bottom:12px; border-bottom:2px solid #333; padding-bottom:6px; page-break-after:avoid; }
-      .section-tag { background:#000; color:#fff; padding:6px 14px; font-weight:bold; font-size:13px; }
-      .mcq-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; padding-left:10px; font-size:13px; margin-top:8px; }
-      .q-block { margin-bottom:16px; page-break-inside:avoid; }
-      .footer { margin-top:auto; border-top:1px solid #ccc; padding-top:10px; font-size:10px; color:#777; text-align:center; }
+
+      /* Paper Header & Content */
+      .header-box {
+        border: 1px solid #000;
+        padding: 12px;
+        margin-bottom: 22px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+      }
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        margin-bottom: 12px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 6px;
+        page-break-after: avoid;
+      }
+      .section-tag {
+        background: #000;
+        color: #fff;
+        padding: 6px 14px;
+        font-weight: bold;
+        font-size: 13px;
+      }
+      .mcq-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 16px;
+        padding-left: 10px;
+        font-size: 13px;
+        margin-top: 8px;
+      }
+      .q-block {
+        margin-bottom: 16px;
+        page-break-inside: avoid;
+      }
+      .footer {
+        margin-top: auto;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+        font-size: 10px;
+        color: #777;
+        text-align: center;
+      }
 
       /* Floating Toolbar */
       .toolbar {
@@ -91,75 +202,148 @@
         background: #fff;
         padding: 6px 12px;
         border-radius: 999px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
         display: flex;
         gap: 8px;
         z-index: 999;
-        border:1px solid #ccc;
-        align-items:center;
+        border: 1px solid #ccc;
+        align-items: center;
       }
-      .toolbar button { background:transparent; border:none; cursor:pointer; padding:6px; display:inline-flex; align-items:center; justify-content:center; }
-      .download-btn { background-color:#000 !important; color:white !important; border-radius:20px !important; padding:8px 14px !important; font-weight:bold; display:flex; gap:6px; align-items:center; cursor:pointer; border:none; }
+      .toolbar button {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .download-btn {
+        background-color: #000 !important;
+        color: white !important;
+        border-radius: 20px !important;
+        padding: 8px 14px !important;
+        font-weight: bold;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        cursor: pointer;
+        border: none;
+      }
 
       /* Loading Overlay */
       #loading-overlay {
         position: fixed;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-        background: rgba(0,0,0,0.75);
-        z-index:2000;
-        color:white;
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 2000;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
-      #loading-overlay.hidden { display:none; }
       .spinner {
-        border:5px solid #f3f3f3;
-        border-top:5px solid var(--primary-color);
-        border-radius:50%;
-        width:50px;
-        height:50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--primary-color);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
         animation: spin 1s linear infinite;
-        margin-bottom:20px;
+        margin-bottom: 20px;
       }
-      @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* small utility */
+      .notice {
+        margin: 8px 0;
+        color: #444;
+        font-size: 13px;
+      }
 
       /* -------------------------
          RESPONSIVE / MOBILE FIXES
          ------------------------- */
       @media (max-width: 900px) {
-        .container { padding:20px; max-width:720px; }
-        .form-row { flex-direction:column; }
-        .paper-page { width:100%; min-height:auto; padding:18px; box-shadow:none; }
-        #paper-view-container { padding-top:70px; }
-        .toolbar { left:50%; transform:translateX(-50%) !important; top:12px; border-radius:10px; justify-content:center !important; }
+        .container {
+          padding: 20px;
+          max-width: 720px;
+        }
+        .form-row {
+          flex-direction: column;
+        }
+        .paper-page {
+          width: 100%;
+          min-height: auto;
+          padding: 18px;
+          box-shadow: none;
+        }
+        #paper-view-container {
+          padding-top: 70px;
+        }
+        .toolbar {
+          left: 16px;
+          transform: none;
+          top: 12px;
+          border-radius: 10px;
+          justify-content: center !important; /* ⭐ Keep centered */
+        }
       }
+
       @media (max-width: 600px) {
-        .container { padding:16px; border-radius:8px; }
-        h2 { font-size:18px; }
-        .header-box { flex-direction:column; gap:8px; font-size:13px; }
-        .mcq-grid { grid-template-columns:1fr; }
-        .toolbar { left:50%; transform:translateX(-50%) !important; top:8px; padding:6px 8px; gap:6px; justify-content:center !important; }
-        .download-btn { padding:6px 10px !important; font-size:13px; }
-        #paper-view-container { padding:12px; overflow:auto; }
-        .paper-page { transform-origin:top center; transform:scale(0.88); max-width:100%; }
+        .container {
+          padding: 16px;
+          border-radius: 8px;
+        }
+        h2 {
+          font-size: 18px;
+        }
+        .header-box {
+          flex-direction: column;
+          gap: 8px;
+          font-size: 13px;
+        }
+        .mcq-grid {
+          grid-template-columns: 1fr;
+        }
+        .toolbar {
+          left: 8px;
+          top: 8px;
+          padding: 6px 8px;
+          gap: 6px;
+          justify-content: center !important; /* ⭐ Keep centered */
+        }
+        .download-btn {
+          padding: 6px 10px !important;
+          font-size: 13px;
+        }
+        #paper-view-container {
+          padding: 12px;
+          overflow: auto;
+        }
+        .paper-page {
+          transform-origin: top center;
+          transform: scale(0.88);
+          max-width: 100%;
+        }
       }
     </style>
   </head>
   <body>
-    <!-- --- LOADING OVERLAY AT START --- -->
-    <div id="loading-overlay">
-      <div class="spinner"></div>
-      <h3 id="loading-text">TUTO</h3>
-    </div>
-
-    <div id="input-view-container" class="hidden">
+    <div id="input-view-container">
       <div class="container">
         <h2>Course Syllabus Entry</h2>
+
         <form id="syllabusForm">
           <div class="form-group">
             <label>Subject Name</label>
@@ -185,16 +369,34 @@
 
           <div class="unit-box">
             <label class="unit-label">Unit 01</label>
-            <textarea id="syllabusUnit1" rows="4" placeholder="Enter syllabus for unit 1"></textarea>
+            <textarea
+              id="syllabusUnit1"
+              rows="4"
+              placeholder="Enter syllabus for unit 1"
+            ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit1" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"/>
+            <!-- Accept images + documents -->
+            <input
+              type="file"
+              id="fileUnit1"
+              accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"
+            />
           </div>
 
           <div class="unit-box">
             <label class="unit-label">Unit 02</label>
-            <textarea id="syllabusUnit2" rows="4" placeholder="Enter syllabus for unit 2"></textarea>
+            <textarea
+              id="syllabusUnit2"
+              rows="4"
+              placeholder="Enter syllabus for unit 2"
+            ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <input type="file" id="fileUnit2" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"/>
+            <!-- Accept images + documents -->
+            <input
+              type="file"
+              id="fileUnit2"
+              accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"
+            />
           </div>
 
           <button type="submit" class="submit-btn">Generate Paper</button>
@@ -207,60 +409,416 @@
         <button type="button" onclick="document.execCommand('bold',false,null)">
           <span class="material-symbols-outlined">format_bold</span>
         </button>
-        <button type="button" onclick="document.execCommand('italic',false,null)">
+        <button
+          type="button"
+          onclick="document.execCommand('italic',false,null)"
+        >
           <span class="material-symbols-outlined">format_italic</span>
         </button>
         <button type="button" id="btn-download-pdf" class="download-btn">
           <span class="material-symbols-outlined">download</span> Download PDF
         </button>
-        <button type="button" onclick="location.reload()" style="font-size:12px;color:red;margin-left:8px;border:none;background:none;cursor:pointer;">New</button>
+        <button
+          type="button"
+          onclick="location.reload()"
+          style="
+            font-size: 12px;
+            color: red;
+            margin-left: 8px;
+            border: none;
+            background: none;
+            cursor: pointer;
+          "
+        >
+          New
+        </button>
       </div>
 
-      <div class="paper-page" id="paper-content" contenteditable="true" spellcheck="false">
+      <div
+        class="paper-page"
+        id="paper-content"
+        contenteditable="true"
+        spellcheck="false"
+      >
         <div class="header-box">
           <div>
-            <strong>Subject:</strong> <span id="paper-subject"></span><br/>
-            <strong>College:</strong> TUTO LEARNING COLLEGE<br/>
+            <strong>Subject:</strong> <span id="paper-subject"></span><br />
+            <strong>College:</strong> TUTO LEARNING COLLEGE<br />
             <strong>Code:</strong> 1122
           </div>
-          <div style="text-align:right">
-            <strong>Date:</strong> <span id="paper-date"></span><br/>
+          <div style="text-align: right">
+            <strong>Date:</strong> <span id="paper-date"></span><br />
             <strong>Time:</strong> 2 Hours
           </div>
         </div>
-        <div class="section-header"><span class="section-tag">PART A</span><span class="marks-info">(MCQ Questions)</span></div>
+
+        <div class="section-header">
+          <span class="section-tag">PART A</span
+          ><span class="marks-info">(MCQ Questions)</span>
+        </div>
         <div id="part-a-container"></div>
-        <div class="section-header" style="margin-top:40px;border-top:1px dashed #ccc;padding-top:20px;">
-          <span class="section-tag">PART B</span><span class="marks-info">(Structured Essay)</span>
+
+        <div
+          class="section-header"
+          style="
+            margin-top: 40px;
+            border-top: 1px dashed #ccc;
+            padding-top: 20px;
+          "
+        >
+          <span class="section-tag">PART B</span
+          ><span class="marks-info">(Structured Essay)</span>
         </div>
         <div id="part-b-container"></div>
-        <div class="section-header" style="margin-top:40px;border-top:1px dashed #ccc;padding-top:20px;">
-          <span class="section-tag">PART C</span><span class="marks-info">(Case Study)</span>
+
+        <div
+          class="section-header"
+          style="
+            margin-top: 40px;
+            border-top: 1px dashed #ccc;
+            padding-top: 20px;
+          "
+        >
+          <span class="section-tag">PART C</span
+          ><span class="marks-info">(Case Study)</span>
         </div>
         <div id="part-c-container"></div>
-        <div class="footer">Generated on: <span id="footer-date"></span> | Template by TUTO LEARNING COLLEGE</div>
+
+        <div class="footer">
+          Generated on: <span id="footer-date"></span> | Template by TUTO
+          LEARNING COLLEGE
+        </div>
       </div>
     </div>
 
-    <script>
-      window.addEventListener("load", () => {
-        // hide loader, show form
-        document.getElementById("loading-overlay").classList.add("hidden");
-        document.getElementById("input-view-container").classList.remove("hidden");
-      });
+    <div id="loading-overlay" class="hidden">
+      <div class="spinner"></div>
+      <h3 id="loading-text">Processing...</h3>
+    </div>
 
-      // -------------------------------
-      // Keep your existing JS for form submit, PDF generation
-      // This will remain identical to your original code
-      // -------------------------------
+    <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const overlay = document.getElementById("loading-overlay");
-        const loadingText = document.getElementById("loading-text");
+        // --- CONFIGURATION ---
+        // Keep your webhooks here; we will TRY them but automatically fallback to client-side behavior
+        const WEBHOOK_URL_1 =
+          "https://n8n.n8yland.me/webhook/18817b49-3d58-4b53-8e7b-901e35cc4e19";
+        const WEBHOOK_URL_2 =
+          "https://n8n.n8yland.me/webhook/2fbd818a-f9d3-4c16-8b4e-e03dbbc008bd";
+
         const form = document.getElementById("syllabusForm");
         const downloadBtn = document.getElementById("btn-download-pdf");
+        const overlay = document.getElementById("loading-overlay");
+        const loadingText = document.getElementById("loading-text");
 
-        // Full form submission + PDF generation logic...
-        // (Use your existing JS here; unchanged)
+        // --- PART 1: GENERATE QUESTIONS ---
+        if (form) {
+          form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            loadingText.innerText = "Generating Questions...";
+            overlay.classList.remove("hidden");
+
+            const formData = new FormData();
+            formData.append(
+              "subjectDetails",
+              document.getElementById("subjectDetails").value || ""
+            );
+            formData.append(
+              "language",
+              document.getElementById("language").value || "english"
+            );
+            formData.append(
+              "level",
+              document.getElementById("level").value || "medium"
+            );
+
+            // Unit 1 File Logic (we only attach file if present)
+            const f1 = document.getElementById("fileUnit1").files[0];
+            if (f1) {
+              formData.append("fileUnit1", f1);
+              formData.append("syllabusUnit1Type", "file");
+            } else {
+              formData.append(
+                "syllabusUnit1",
+                document.getElementById("syllabusUnit1").value || ""
+              );
+              formData.append("syllabusUnit1Type", "text");
+            }
+
+            // Unit 2 File Logic
+            const f2 = document.getElementById("fileUnit2").files[0];
+            if (f2) {
+              formData.append("fileUnit2", f2);
+              formData.append("syllabusUnit2Type", "file");
+            } else {
+              formData.append(
+                "syllabusUnit2",
+                document.getElementById("syllabusUnit2").value || ""
+              );
+              formData.append("syllabusUnit2Type", "text");
+            }
+
+            // Try server webhook first. If it fails (network/CORS) we fall back to a local generator.
+            let usedFallback = false;
+            try {
+              const res = await fetch(WEBHOOK_URL_1, {
+                method: "POST",
+                body: formData,
+              });
+
+              if (!res.ok) {
+                // Non-2xx response — attempt to read error text for debugging then fallback
+                const errText = await res
+                  .text()
+                  .catch(() => "(no response body)");
+                console.warn(
+                  "Webhook returned non-OK status",
+                  res.status,
+                  errText
+                );
+                throw new Error(`Webhook error ${res.status}: ${errText}`);
+              }
+
+              // Parse JSON — if this fails we'll catch and fallback
+              const data = await res.json();
+
+              populatePaper(data);
+            } catch (err) {
+              // Common cause: TypeError: Failed to fetch (network/CORS). Provide honest fallback and console info.
+              console.error(
+                "Primary webhook failed; falling back to local generator:",
+                err
+              );
+              usedFallback = true;
+
+              const fallbackData = generateQuestionsFromSyllabus(
+                document.getElementById("syllabusUnit1").value,
+                document.getElementById("syllabusUnit2").value
+              );
+              populatePaper(fallbackData);
+
+              // Inform the user gently
+              alert(
+                "Server webhook unreachable. Generated a local draft instead.\nCheck the browser console for details."
+              );
+            } finally {
+              // Switch to Paper View in either case
+              document.getElementById("input-view-container").style.display =
+                "none";
+              document.getElementById("paper-view-container").style.display =
+                "flex";
+              document.body.style.backgroundColor = "#525659"; // Grey background
+              overlay.classList.add("hidden");
+            }
+          });
+        }
+
+        // --- PART 2: GENERATE PDF ---
+        if (downloadBtn) {
+          downloadBtn.addEventListener("click", async function () {
+            loadingText.innerText = "Creating PDF...";
+            overlay.classList.remove("hidden");
+
+            // Build HTML for PDF service (keep it simple)
+            const inlineStyles = Array.from(document.querySelectorAll("style"))
+              .map((el) => el.outerHTML)
+              .join("");
+            const content = document.getElementById("paper-content").innerHTML;
+            const finalHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">${inlineStyles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:#fff}.paper-page{width:210mm;min-height:297mm;padding:20mm;box-sizing:border-box}.q-block,.section-header,.header-box{page-break-inside:avoid}</style></head><body><div class="paper-page">${content}</div></body></html>`;
+
+            try {
+              const res = await fetch(WEBHOOK_URL_2, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ html: finalHtml }),
+              });
+
+              if (!res.ok) {
+                const errText = await res
+                  .text()
+                  .catch(() => "(no response body)");
+                throw new Error(`PDF webhook error ${res.status}: ${errText}`);
+              }
+
+              const blob = await res.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download =
+                (document.getElementById("subjectDetails").value || "Paper") +
+                ".pdf";
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+            } catch (err) {
+              // Fallback: use client-side html2pdf to generate PDF (works without server)
+              console.error(
+                "PDF webhook failed, falling back to client-side PDF generation:",
+                err
+              );
+              alert(
+                "PDF webhook failed (network/CORS). Falling back to client-side PDF generation."
+              );
+
+              try {
+                // Use html2pdf to generate PDF from the #paper-content element
+                const element = document.getElementById("paper-content");
+                const opt = {
+                  margin: 10,
+                  filename:
+                    (document.getElementById("subjectDetails").value ||
+                      "Paper") + ".pdf",
+                  image: { type: "jpeg", quality: 0.98 },
+                  html2canvas: { scale: 2 },
+                  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                };
+                // NOTE: html2pdf returns a Promise when save() is called
+                html2pdf()
+                  .set(opt)
+                  .from(element)
+                  .save()
+                  .finally(() => overlay.classList.add("hidden"));
+                return; // early return; overlay hidden in finally
+              } catch (clientErr) {
+                console.error("Client-side PDF generation failed:", clientErr);
+                alert(
+                  "Both server-side and client-side PDF generation failed. See console for details."
+                );
+              }
+            } finally {
+              overlay.classList.add("hidden");
+            }
+          });
+        }
+
+        // --- HELPER FUNCTION: POPULATE DATA ---
+        function populatePaper(data) {
+          // Safe population with fallbacks
+          document.getElementById("paper-subject").innerText =
+            document.getElementById("subjectDetails").value ||
+            data.subject ||
+            "";
+          const today = new Date().toLocaleDateString();
+          document.getElementById("paper-date").innerText = today;
+          document.getElementById("footer-date").innerText = today;
+
+          // Part A (MCQ)
+          const divA = document.getElementById("part-a-container");
+          divA.innerHTML = "";
+
+          if (data.QuestionsA && Array.isArray(data.QuestionsA)) {
+            data.QuestionsA.forEach((q, i) => {
+              const opts = [q.option_1, q.option_2, q.option_3, q.option_4]
+                .map((o, x) =>
+                  o
+                    ? `<div>${["a", "b", "c", "d"][x]}) ${escapeHtml(
+                        String(o)
+                      )}</div>`
+                    : ""
+                )
+                .join("");
+              divA.innerHTML += `<div class="q-block"><div class="q-text">${
+                i + 1
+              }. ${escapeHtml(
+                String(q.question || "")
+              )}</div><div class="mcq-grid">${opts}</div></div>`;
+            });
+          } else if (data.questions && Array.isArray(data.questions)) {
+            // fallback if webhook uses different key
+            data.questions.forEach((q, i) => {
+              divA.innerHTML += `<div class="q-block">${escapeHtml(
+                String(q)
+              )}</div>`;
+            });
+          } else if (data.generated && Array.isArray(data.generated.MCQs)) {
+            // our local fallback format
+            data.generated.MCQs.forEach((q, i) => {
+              const opts = q.options
+                .map(
+                  (o, idx) =>
+                    `<div>${["a", "b", "c", "d"][idx]}) ${escapeHtml(o)}</div>`
+                )
+                .join("");
+              divA.innerHTML += `<div class="q-block"><div class="q-text">${
+                i + 1
+              }. ${escapeHtml(
+                q.question
+              )}</div><div class="mcq-grid">${opts}</div></div>`;
+            });
+          } else {
+            divA.innerHTML =
+              '<div class="q-block">No MCQs returned by the server.</div>';
+          }
+
+          // Part B & C (Structured/Essay)
+          const fillSec = (arr, el) => {
+            el.innerHTML = "";
+            if (arr && Array.isArray(arr)) {
+              arr.forEach((q, i) => {
+                el.innerHTML += `<div class="q-block"><div class="q-text">Q${
+                  i + 1
+                }. ${escapeHtml(
+                  String(q)
+                )}</div><br><div style="border-bottom:1px dotted #ccc;height:30px"></div><div style="border-bottom:1px dotted #ccc;height:30px"></div></div>`;
+              });
+            } else if (data.generated && Array.isArray(data.generated.essays)) {
+              data.generated.essays.forEach((q, i) => {
+                el.innerHTML += `<div class="q-block"><div class="q-text">Q${
+                  i + 1
+                }. ${escapeHtml(
+                  q
+                )}</div><br><div style="border-bottom:1px dotted #ccc;height:30px"></div><div style="border-bottom:1px dotted #ccc;height:30px"></div></div>`;
+              });
+            } else {
+              // fallback placeholder
+              el.innerHTML = `<div class="q-block">No items available.</div>`;
+            }
+          };
+
+          fillSec(data.QuestionsB, document.getElementById("part-b-container"));
+          fillSec(data.QuestionsC, document.getElementById("part-c-container"));
+        }
+
+        // Local fallback question generator (very simple heuristic)
+        function generateQuestionsFromSyllabus(unit1, unit2) {
+          const text = (unit1 || "") + "\n" + (unit2 || "");
+          // split into sentences and pick up to 10 seeds
+          const sentences = text
+            .split(/[\.\n]/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+          const mcqs = [];
+          for (let i = 0; i < Math.min(7, sentences.length); i++) {
+            const seed = sentences[i];
+            mcqs.push({
+              question: seed.length > 80 ? seed.slice(0, 80) + "..." : seed,
+              options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+            });
+          }
+
+          // ensure at least a few questions exist
+          if (mcqs.length === 0) {
+            mcqs.push({
+              question: "Write briefly about the main topics of the syllabus.",
+              options: ["Topic A", "Topic B", "Topic C", "Topic D"],
+            });
+          }
+
+          const essays = sentences
+            .slice(7, 10)
+            .map((s) => s || "Explain the above topic.");
+
+          return { generated: { MCQs: mcqs, essays } };
+        }
+
+        // small helper to avoid breaking HTML when injecting strings
+        function escapeHtml(unsafe) {
+          return String(unsafe || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
       });
     </script>
   </body>
