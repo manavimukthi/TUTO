@@ -133,7 +133,6 @@
         padding-top: 90px;
       }
 
-      /* Default: show true A4 size on large screens */
       .paper-page {
         background: #fff;
         width: 210mm; /* A4 Width */
@@ -292,11 +291,12 @@
           padding-top: 70px;
         }
         .toolbar {
-          left: 16px;
-          transform: none;
+          left: 50% !important;
+          transform: translateX(-50%) !important;
           top: 12px;
           border-radius: 10px;
-          justify-content: center !important; /* ⭐ Keep centered */
+          padding: 6px 10px;
+          justify-content: center !important;
         }
       }
 
@@ -317,11 +317,11 @@
           grid-template-columns: 1fr;
         }
         .toolbar {
-          left: 8px;
+          left: 50% !important;
+          transform: translateX(-50%) !important;
           top: 8px;
           padding: 6px 8px;
-          gap: 6px;
-          justify-content: center !important; /* ⭐ Keep centered */
+          justify-content: center !important;
         }
         .download-btn {
           padding: 6px 10px !important;
@@ -337,9 +337,31 @@
           max-width: 100%;
         }
       }
+
+      /* ---------- STARTUP LOADER ---------- */
+      #startup-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000000e0;
+        z-index: 6000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+      }
     </style>
   </head>
   <body>
+    <!-- STARTUP LOADER -->
+    <div id="startup-loader">
+      <div class="spinner"></div>
+      <h2 style="margin-top:10px;font-size:22px;letter-spacing:2px;">TUTO</h2>
+    </div>
+
     <div id="input-view-container">
       <div class="container">
         <h2>Course Syllabus Entry</h2>
@@ -375,7 +397,6 @@
               placeholder="Enter syllabus for unit 1"
             ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <!-- Accept images + documents -->
             <input
               type="file"
               id="fileUnit1"
@@ -391,7 +412,6 @@
               placeholder="Enter syllabus for unit 2"
             ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <!-- Accept images + documents -->
             <input
               type="file"
               id="fileUnit2"
@@ -497,9 +517,15 @@
     </div>
 
     <script>
+      // ---------- STARTUP LOADER ----------
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.getElementById("startup-loader").style.display = "none";
+        }, 800);
+      });
+
       document.addEventListener("DOMContentLoaded", function () {
         // --- CONFIGURATION ---
-        // Keep your webhooks here; we will TRY them but automatically fallback to client-side behavior
         const WEBHOOK_URL_1 =
           "https://n8n.n8yland.me/webhook/18817b49-3d58-4b53-8e7b-901e35cc4e19";
         const WEBHOOK_URL_2 =
@@ -510,7 +536,6 @@
         const overlay = document.getElementById("loading-overlay");
         const loadingText = document.getElementById("loading-text");
 
-        // --- PART 1: GENERATE QUESTIONS ---
         if (form) {
           form.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -531,7 +556,6 @@
               document.getElementById("level").value || "medium"
             );
 
-            // Unit 1 File Logic (we only attach file if present)
             const f1 = document.getElementById("fileUnit1").files[0];
             if (f1) {
               formData.append("fileUnit1", f1);
@@ -544,7 +568,6 @@
               formData.append("syllabusUnit1Type", "text");
             }
 
-            // Unit 2 File Logic
             const f2 = document.getElementById("fileUnit2").files[0];
             if (f2) {
               formData.append("fileUnit2", f2);
@@ -557,267 +580,60 @@
               formData.append("syllabusUnit2Type", "text");
             }
 
-            // Try server webhook first. If it fails (network/CORS) we fall back to a local generator.
-            let usedFallback = false;
             try {
-              const res = await fetch(WEBHOOK_URL_1, {
+              const resp1 = await fetch(WEBHOOK_URL_1, {
                 method: "POST",
                 body: formData,
               });
+              const data1 = await resp1.json();
 
-              if (!res.ok) {
-                // Non-2xx response — attempt to read error text for debugging then fallback
-                const errText = await res
-                  .text()
-                  .catch(() => "(no response body)");
-                console.warn(
-                  "Webhook returned non-OK status",
-                  res.status,
-                  errText
-                );
-                throw new Error(`Webhook error ${res.status}: ${errText}`);
-              }
+              const resp2 = await fetch(WEBHOOK_URL_2, {
+                method: "POST",
+                body: formData,
+              });
+              const data2 = await resp2.json();
 
-              // Parse JSON — if this fails we'll catch and fallback
-              const data = await res.json();
+              // --- INSERT DATA INTO PAPER ---
+              document.getElementById("paper-subject").innerText =
+                document.getElementById("subjectDetails").value;
+              document.getElementById("paper-date").innerText =
+                new Date().toLocaleDateString();
+              document.getElementById("footer-date").innerText =
+                new Date().toLocaleString();
 
-              populatePaper(data);
-            } catch (err) {
-              // Common cause: TypeError: Failed to fetch (network/CORS). Provide honest fallback and console info.
-              console.error(
-                "Primary webhook failed; falling back to local generator:",
-                err
-              );
-              usedFallback = true;
+              document.getElementById("part-a-container").innerHTML =
+                data1.html || "<p>No MCQs generated</p>";
+              document.getElementById("part-b-container").innerHTML =
+                data2.html || "<p>No Structured Questions generated</p>";
+              document.getElementById("part-c-container").innerHTML =
+                "<p>No Case Study available</p>";
 
-              const fallbackData = generateQuestionsFromSyllabus(
-                document.getElementById("syllabusUnit1").value,
-                document.getElementById("syllabusUnit2").value
-              );
-              populatePaper(fallbackData);
-
-              // Inform the user gently
-              alert(
-                "Server webhook unreachable. Generated a local draft instead.\nCheck the browser console for details."
-              );
-            } finally {
-              // Switch to Paper View in either case
+              overlay.classList.add("hidden");
               document.getElementById("input-view-container").style.display =
                 "none";
               document.getElementById("paper-view-container").style.display =
                 "flex";
-              document.body.style.backgroundColor = "#525659"; // Grey background
-              overlay.classList.add("hidden");
-            }
-          });
-        }
-
-        // --- PART 2: GENERATE PDF ---
-        if (downloadBtn) {
-          downloadBtn.addEventListener("click", async function () {
-            loadingText.innerText = "Creating PDF...";
-            overlay.classList.remove("hidden");
-
-            // Build HTML for PDF service (keep it simple)
-            const inlineStyles = Array.from(document.querySelectorAll("style"))
-              .map((el) => el.outerHTML)
-              .join("");
-            const content = document.getElementById("paper-content").innerHTML;
-            const finalHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">${inlineStyles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:#fff}.paper-page{width:210mm;min-height:297mm;padding:20mm;box-sizing:border-box}.q-block,.section-header,.header-box{page-break-inside:avoid}</style></head><body><div class="paper-page">${content}</div></body></html>`;
-
-            try {
-              const res = await fetch(WEBHOOK_URL_2, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ html: finalHtml }),
-              });
-
-              if (!res.ok) {
-                const errText = await res
-                  .text()
-                  .catch(() => "(no response body)");
-                throw new Error(`PDF webhook error ${res.status}: ${errText}`);
-              }
-
-              const blob = await res.blob();
-              const url = window.URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download =
-                (document.getElementById("subjectDetails").value || "Paper") +
-                ".pdf";
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
             } catch (err) {
-              // Fallback: use client-side html2pdf to generate PDF (works without server)
-              console.error(
-                "PDF webhook failed, falling back to client-side PDF generation:",
-                err
-              );
-              alert(
-                "PDF webhook failed (network/CORS). Falling back to client-side PDF generation."
-              );
-
-              try {
-                // Use html2pdf to generate PDF from the #paper-content element
-                const element = document.getElementById("paper-content");
-                const opt = {
-                  margin: 10,
-                  filename:
-                    (document.getElementById("subjectDetails").value ||
-                      "Paper") + ".pdf",
-                  image: { type: "jpeg", quality: 0.98 },
-                  html2canvas: { scale: 2 },
-                  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-                };
-                // NOTE: html2pdf returns a Promise when save() is called
-                html2pdf()
-                  .set(opt)
-                  .from(element)
-                  .save()
-                  .finally(() => overlay.classList.add("hidden"));
-                return; // early return; overlay hidden in finally
-              } catch (clientErr) {
-                console.error("Client-side PDF generation failed:", clientErr);
-                alert(
-                  "Both server-side and client-side PDF generation failed. See console for details."
-                );
-              }
-            } finally {
+              console.error(err);
               overlay.classList.add("hidden");
+              alert("Something went wrong. Please try again!");
             }
           });
         }
 
-        // --- HELPER FUNCTION: POPULATE DATA ---
-        function populatePaper(data) {
-          // Safe population with fallbacks
-          document.getElementById("paper-subject").innerText =
-            document.getElementById("subjectDetails").value ||
-            data.subject ||
-            "";
-          const today = new Date().toLocaleDateString();
-          document.getElementById("paper-date").innerText = today;
-          document.getElementById("footer-date").innerText = today;
-
-          // Part A (MCQ)
-          const divA = document.getElementById("part-a-container");
-          divA.innerHTML = "";
-
-          if (data.QuestionsA && Array.isArray(data.QuestionsA)) {
-            data.QuestionsA.forEach((q, i) => {
-              const opts = [q.option_1, q.option_2, q.option_3, q.option_4]
-                .map((o, x) =>
-                  o
-                    ? `<div>${["a", "b", "c", "d"][x]}) ${escapeHtml(
-                        String(o)
-                      )}</div>`
-                    : ""
-                )
-                .join("");
-              divA.innerHTML += `<div class="q-block"><div class="q-text">${
-                i + 1
-              }. ${escapeHtml(
-                String(q.question || "")
-              )}</div><div class="mcq-grid">${opts}</div></div>`;
-            });
-          } else if (data.questions && Array.isArray(data.questions)) {
-            // fallback if webhook uses different key
-            data.questions.forEach((q, i) => {
-              divA.innerHTML += `<div class="q-block">${escapeHtml(
-                String(q)
-              )}</div>`;
-            });
-          } else if (data.generated && Array.isArray(data.generated.MCQs)) {
-            // our local fallback format
-            data.generated.MCQs.forEach((q, i) => {
-              const opts = q.options
-                .map(
-                  (o, idx) =>
-                    `<div>${["a", "b", "c", "d"][idx]}) ${escapeHtml(o)}</div>`
-                )
-                .join("");
-              divA.innerHTML += `<div class="q-block"><div class="q-text">${
-                i + 1
-              }. ${escapeHtml(
-                q.question
-              )}</div><div class="mcq-grid">${opts}</div></div>`;
-            });
-          } else {
-            divA.innerHTML =
-              '<div class="q-block">No MCQs returned by the server.</div>';
-          }
-
-          // Part B & C (Structured/Essay)
-          const fillSec = (arr, el) => {
-            el.innerHTML = "";
-            if (arr && Array.isArray(arr)) {
-              arr.forEach((q, i) => {
-                el.innerHTML += `<div class="q-block"><div class="q-text">Q${
-                  i + 1
-                }. ${escapeHtml(
-                  String(q)
-                )}</div><br><div style="border-bottom:1px dotted #ccc;height:30px"></div><div style="border-bottom:1px dotted #ccc;height:30px"></div></div>`;
-              });
-            } else if (data.generated && Array.isArray(data.generated.essays)) {
-              data.generated.essays.forEach((q, i) => {
-                el.innerHTML += `<div class="q-block"><div class="q-text">Q${
-                  i + 1
-                }. ${escapeHtml(
-                  q
-                )}</div><br><div style="border-bottom:1px dotted #ccc;height:30px"></div><div style="border-bottom:1px dotted #ccc;height:30px"></div></div>`;
-              });
-            } else {
-              // fallback placeholder
-              el.innerHTML = `<div class="q-block">No items available.</div>`;
-            }
-          };
-
-          fillSec(data.QuestionsB, document.getElementById("part-b-container"));
-          fillSec(data.QuestionsC, document.getElementById("part-c-container"));
-        }
-
-        // Local fallback question generator (very simple heuristic)
-        function generateQuestionsFromSyllabus(unit1, unit2) {
-          const text = (unit1 || "") + "\n" + (unit2 || "");
-          // split into sentences and pick up to 10 seeds
-          const sentences = text
-            .split(/[\.\n]/)
-            .map((s) => s.trim())
-            .filter(Boolean);
-          const mcqs = [];
-          for (let i = 0; i < Math.min(7, sentences.length); i++) {
-            const seed = sentences[i];
-            mcqs.push({
-              question: seed.length > 80 ? seed.slice(0, 80) + "..." : seed,
-              options: ["Option 1", "Option 2", "Option 3", "Option 4"],
-            });
-          }
-
-          // ensure at least a few questions exist
-          if (mcqs.length === 0) {
-            mcqs.push({
-              question: "Write briefly about the main topics of the syllabus.",
-              options: ["Topic A", "Topic B", "Topic C", "Topic D"],
-            });
-          }
-
-          const essays = sentences
-            .slice(7, 10)
-            .map((s) => s || "Explain the above topic.");
-
-          return { generated: { MCQs: mcqs, essays } };
-        }
-
-        // small helper to avoid breaking HTML when injecting strings
-        function escapeHtml(unsafe) {
-          return String(unsafe || "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/\"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        // --- DOWNLOAD PDF ---
+        if (downloadBtn) {
+          downloadBtn.addEventListener("click", function () {
+            const element = document.getElementById("paper-content");
+            const opt = {
+              margin: 10,
+              filename: "generated-paper.pdf",
+              image: { type: "jpeg", quality: 0.98 },
+              html2canvas: { scale: 2 },
+              jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+            };
+            html2pdf().set(opt).from(element).save();
+          });
         }
       });
     </script>
