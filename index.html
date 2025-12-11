@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Syllabus Paper Generator</title>
 
-    <!-- Client-side PDF library (fallback if webhook PDF fails) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link
@@ -37,6 +36,34 @@
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- INITIAL LOAD SCREEN (New Feature) --- */
+      #initial-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #ffffff;
+        z-index: 9999; /* Highest priority */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        transition: opacity 0.5s ease-out;
+      }
+      .tuto-logo-text {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        letter-spacing: 4px;
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% { opacity: 0.6; transform: scale(0.98); }
+        50% { opacity: 1; transform: scale(1.05); }
+        100% { opacity: 0.6; transform: scale(0.98); }
       }
 
       /* --- INPUT FORM STYLES --- */
@@ -208,6 +235,7 @@
         z-index: 999;
         border: 1px solid #ccc;
         align-items: center;
+        width: max-content; /* Ensure it stays compact */
       }
       .toolbar button {
         background: transparent;
@@ -231,7 +259,7 @@
         border: none;
       }
 
-      /* Loading Overlay */
+      /* Loading Overlay (For Processing) */
       #loading-overlay {
         position: fixed;
         top: 0;
@@ -272,7 +300,7 @@
       }
 
       /* -------------------------
-         RESPONSIVE / MOBILE FIXES
+          RESPONSIVE / MOBILE FIXES
          ------------------------- */
       @media (max-width: 900px) {
         .container {
@@ -291,12 +319,16 @@
         #paper-view-container {
           padding-top: 70px;
         }
+        
+        /* FIX: Keep toolbar centered on tablet/mobile */
         .toolbar {
-          left: 16px;
-          transform: none;
+          left: 50%;
+          transform: translateX(-50%);
           top: 12px;
           border-radius: 10px;
-          justify-content: center !important; /* ⭐ Keep centered */
+          justify-content: center !important;
+          width: 90%; /* Slight adjustment to fit screen but stay centered */
+          max-width: 400px;
         }
       }
 
@@ -316,13 +348,17 @@
         .mcq-grid {
           grid-template-columns: 1fr;
         }
+        
+        /* FIX: Keep toolbar centered on small mobile */
         .toolbar {
-          left: 8px;
-          top: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          top: 10px;
           padding: 6px 8px;
           gap: 6px;
-          justify-content: center !important; /* ⭐ Keep centered */
+          width: 95%; /* Make it fit small screens */
         }
+        
         .download-btn {
           padding: 6px 10px !important;
           font-size: 13px;
@@ -340,6 +376,10 @@
     </style>
   </head>
   <body>
+    <div id="initial-loader">
+        <div class="tuto-logo-text">TUTO</div>
+    </div>
+
     <div id="input-view-container">
       <div class="container">
         <h2>Course Syllabus Entry</h2>
@@ -375,7 +415,6 @@
               placeholder="Enter syllabus for unit 1"
             ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <!-- Accept images + documents -->
             <input
               type="file"
               id="fileUnit1"
@@ -391,7 +430,6 @@
               placeholder="Enter syllabus for unit 2"
             ></textarea>
             <div class="or-divider-form">- OR UPLOAD FILE -</div>
-            <!-- Accept images + documents -->
             <input
               type="file"
               id="fileUnit2"
@@ -497,6 +535,18 @@
     </div>
 
     <script>
+        // --- NEW: Remove Initial Loader when page is ready ---
+        window.addEventListener('load', function() {
+            const initLoader = document.getElementById('initial-loader');
+            // Slight delay to ensure it's visible for a moment (optional, looks smoother)
+            setTimeout(() => {
+                initLoader.style.opacity = '0';
+                setTimeout(() => {
+                    initLoader.style.display = 'none';
+                }, 500); // wait for fade out
+            }, 800);
+        });
+
       document.addEventListener("DOMContentLoaded", function () {
         // --- CONFIGURATION ---
         // Keep your webhooks here; we will TRY them but automatically fallback to client-side behavior
