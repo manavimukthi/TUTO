@@ -19,12 +19,12 @@
     />
 
     <style>
-      /* --- VARIABLES & RESET --- */
+      /* --- CSS VARIABLES & RESET --- */
       :root {
-        --primary: #4f46e5; /* Modern Indigo */
+        --primary: #4f46e5;       /* Brand Color: Indigo */
         --primary-hover: #4338ca;
-        --accent: #0ea5e9; /* Sky Blue */
-        --glass-bg: rgba(255, 255, 255, 0.75);
+        --accent: #0ea5e9;        /* Accent: Sky Blue */
+        --glass-bg: rgba(255, 255, 255, 0.85);
         --glass-border: rgba(255, 255, 255, 0.6);
         --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         --text-dark: #1e293b;
@@ -54,14 +54,14 @@
         100% { background-position: 0% 50%; }
       }
 
-      /* --- SPLIT SCREEN LAYOUT --- */
+      /* --- LAYOUT: SPLIT SCREEN --- */
       #app-layout {
         display: flex;
         width: 100%;
         min-height: 100vh;
       }
 
-      /* LEFT: BRANDING PANEL (Fixed) */
+      /* LEFT PANEL: Branding & Logo */
       .brand-panel {
         width: 40%;
         position: relative;
@@ -72,17 +72,12 @@
         padding: 40px;
         color: white;
         text-align: center;
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.2); /* Semi-transparent overly */
         backdrop-filter: blur(5px);
       }
 
-      .brand-content {
-        max-width: 400px;
-        z-index: 2;
-      }
-
       .logo {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 800;
         letter-spacing: -1px;
         margin-bottom: 10px;
@@ -90,7 +85,7 @@
       }
 
       .tagline {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         opacity: 0.9;
         margin-bottom: 30px;
         font-weight: 300;
@@ -102,33 +97,34 @@
         filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
         animation: float 6s ease-in-out infinite;
       }
-
       @keyframes float {
         0% { transform: translateY(0px); }
         50% { transform: translateY(-20px); }
         100% { transform: translateY(0px); }
       }
 
-      /* RIGHT: FORM PANEL (Scrollable) */
+      /* RIGHT PANEL: Form Area */
       .form-panel {
         width: 60%;
         padding: 40px;
         overflow-y: auto;
         display: flex;
         justify-content: center;
-        align-items: flex-start;
+        align-items: flex-start; /* Aligns card to top */
       }
 
+      /* Glassmorphism Card Style */
       .glass-card {
         background: var(--glass-bg);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--glass-border);
         border-radius: 24px;
         padding: 40px;
         width: 100%;
         max-width: 650px;
         box-shadow: var(--glass-shadow);
+        margin-top: 20px;
       }
 
       h2 {
@@ -138,11 +134,8 @@
         color: var(--primary);
       }
 
-      /* --- FORM ELEMENTS --- */
-      .form-group {
-        margin-bottom: 24px;
-      }
-
+      /* --- FORM INPUTS --- */
+      .form-group { margin-bottom: 24px; }
       label {
         display: block;
         font-size: 0.9rem;
@@ -151,13 +144,11 @@
         color: var(--text-dark);
       }
 
-      input[type="text"],
-      select,
-      textarea {
+      input[type="text"], select, textarea {
         width: 100%;
         padding: 16px;
         background: rgba(255, 255, 255, 0.6);
-        border: none;
+        border: 2px solid transparent;
         border-radius: 12px;
         font-family: inherit;
         font-size: 1rem;
@@ -165,326 +156,197 @@
         transition: all 0.3s ease;
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
       }
-
-      input[type="text"]:focus,
-      select:focus,
-      textarea:focus {
+      input[type="text"]:focus, select:focus, textarea:focus {
         outline: none;
         background: #fff;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        transform: translateY(-2px);
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
       }
 
-      .form-row {
-        display: flex;
-        gap: 20px;
-      }
-      .form-row .form-group {
-        flex: 1;
-      }
+      .form-row { display: flex; gap: 20px; }
+      .form-row .form-group { flex: 1; }
 
-      /* --- TABS SYSTEM --- */
+      /* --- TABS & UPLOAD --- */
       .unit-wrapper {
-        background: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.5);
         border-radius: 16px;
         padding: 20px;
         margin-bottom: 24px;
-        border: 1px solid rgba(255,255,255,0.5);
+        border: 1px solid rgba(255,255,255,0.8);
       }
-
       .unit-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
       }
-      .unit-title {
-        font-weight: 700;
-        color: var(--primary);
-      }
+      .unit-title { font-weight: 700; color: var(--primary); }
 
       .tabs {
-        display: flex;
-        background: rgba(0,0,0,0.05);
-        padding: 4px;
-        border-radius: 50px;
-        gap: 5px;
+        display: flex; background: rgba(0,0,0,0.05); padding: 4px; border-radius: 50px; gap: 5px;
       }
       .tab-btn {
-        background: transparent;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        color: var(--text-light);
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 4px;
+        background: transparent; border: none; padding: 6px 14px; border-radius: 20px;
+        font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--text-light); transition: all 0.2s;
+        display: flex; align-items: center; gap: 4px;
       }
       .tab-btn.active {
-        background: white;
-        color: var(--primary);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       }
 
-      /* File Upload Styling */
       .file-drop-area {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        padding: 30px;
-        border: 2px dashed #ccc;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.5);
-        transition: 0.2s;
-        text-align: center;
-        cursor: pointer;
+        position: relative; display: flex; align-items: center; justify-content: center;
+        width: 100%; padding: 30px; border: 2px dashed #ccc; border-radius: 12px;
+        background: rgba(255, 255, 255, 0.5); transition: 0.2s; text-align: center; cursor: pointer;
       }
-      .file-drop-area:hover {
-        background: rgba(255, 255, 255, 0.8);
-        border-color: var(--primary);
-      }
+      .file-drop-area:hover { background: rgba(255, 255, 255, 0.8); border-color: var(--primary); }
       .file-msg {
-        font-size: 0.9rem;
-        color: var(--text-light);
-        pointer-events: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
+        font-size: 0.9rem; color: var(--text-light); pointer-events: none;
+        display: flex; flex-direction: column; align-items: center; gap: 5px;
       }
       .file-input {
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 100%;
-        opacity: 0;
-        cursor: pointer;
+        position: absolute; left: 0; top: 0; height: 100%; width: 100%; opacity: 0; cursor: pointer;
       }
 
       .submit-btn {
-        width: 100%;
-        padding: 18px;
+        width: 100%; padding: 18px;
         background: linear-gradient(135deg, var(--primary), var(--accent));
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 700;
-        cursor: pointer;
+        color: white; border: none; border-radius: 12px;
+        font-size: 1.1rem; font-weight: 700; cursor: pointer;
         transition: transform 0.2s, box-shadow 0.2s;
         box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
+        display: flex; justify-content: center; align-items: center; gap: 10px;
       }
-      .submit-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
-      }
+      .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4); }
 
       /* --- INITIAL LOADER --- */
       #initial-loader {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: white;
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: white; z-index: 9999;
+        display: flex; justify-content: center; align-items: center;
         transition: opacity 0.5s ease-out;
       }
       .tuto-logo-text {
-        font-size: 3rem;
-        font-weight: 800;
-        color: var(--primary);
-        letter-spacing: 4px;
+        font-size: 3rem; font-weight: 800; color: var(--primary); letter-spacing: 4px;
         animation: pulse 1.5s infinite;
       }
-      @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.7; transform: scale(0.95); }
-      }
+      @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
 
       .hidden { display: none !important; }
 
-      /* =========================================
-         PAPER VIEW STYLES (FIXED)
-         ========================================= */
+      /* =================================================================
+         PAPER VIEW STYLES - FIXED FOR OVERFLOW & SCROLLING
+         ================================================================= */
       #paper-view-container {
-        display: none;
+        display: none; /* Initially hidden */
         position: fixed;
-        top: 0; 
-        left: 0;
+        top: 0; left: 0;
         width: 100vw;
         height: 100vh;
-        background: #525659;
+        background: #525659; /* Dark grey background like PDF viewers */
         z-index: 5000;
-        overflow-y: auto; /* Allow Scrolling */
-        padding-top: 80px;
-        padding-bottom: 50px;
-        /* FLEX FIXES FOR SCROLLING */
-        display: flex;
-        justify-content: center;
-        align-items: flex-start; /* Start from top so content grows down */
+        
+        /* FLEXBOX FIXES FOR SCROLLING */
+        flex-direction: column;
+        align-items: center;     /* Center paper horizontally */
+        justify-content: flex-start; /* Start from top */
+        overflow-y: auto;        /* Enable vertical scrolling */
+        padding-top: 80px;       /* Space for toolbar */
+        padding-bottom: 50px;    /* Space at bottom */
       }
 
       .paper-page {
         background: #fff;
-        width: 210mm; 
-        min-height: 297mm;
-        height: auto; /* Allow height to grow dynamically */
+        width: 210mm;        /* A4 Width */
+        min-height: 297mm;   /* A4 Min Height */
+        height: auto;        /* ALLOWS HEIGHT TO GROW WITH CONTENT (FIX) */
         padding: 20mm;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         display: flex;
         flex-direction: column;
         color: black;
         box-sizing: border-box;
-        margin-bottom: 40px;
+        margin-bottom: 30px;
+        position: relative;  /* Ensure z-index works if needed */
       }
 
+      /* Typography for Paper */
       .header-box {
-        border: 1px solid #000;
-        padding: 12px;
-        margin-bottom: 22px;
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        font-family: 'Times New Roman', Times, serif;
+        border: 1px solid #000; padding: 12px; margin-bottom: 22px;
+        display: flex; justify-content: space-between;
+        font-size: 14px; font-family: 'Times New Roman', Times, serif;
       }
-      
       .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 22px;
-        margin-bottom: 12px;
-        border-bottom: 2px solid #333;
-        padding-bottom: 6px;
+        display: flex; justify-content: space-between; align-items: center;
+        margin-top: 25px; margin-bottom: 15px;
+        border-bottom: 2px solid #333; padding-bottom: 6px;
       }
       .section-tag {
-        background: #000;
-        color: #fff;
-        padding: 6px 14px;
-        font-weight: bold;
-        font-size: 13px;
+        background: #000; color: #fff; padding: 6px 14px; font-weight: bold; font-size: 13px;
       }
+      .marks-info { font-weight: bold; font-size: 13px; }
+
+      /* Question Styles */
+      .q-block { margin-bottom: 18px; page-break-inside: avoid; }
+      .q-text { font-weight: 500; margin-bottom: 6px; }
+      
       .mcq-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px 16px;
-        padding-left: 10px;
-        font-size: 13px;
-        margin-top: 8px;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px;
+        padding-left: 15px; font-size: 13px; margin-top: 5px;
       }
-      .q-block { margin-bottom: 16px; page-break-inside: avoid;}
+      
       .footer {
-        margin-top: auto;
-        border-top: 1px solid #ccc;
-        padding-top: 10px;
-        font-size: 10px;
-        color: #777;
-        text-align: center;
+        margin-top: auto; /* Pushes footer to bottom of min-height, or stays at bottom of content */
+        border-top: 1px solid #ccc; padding-top: 12px; margin-top: 40px;
+        font-size: 10px; color: #777; text-align: center;
       }
 
       /* Floating Toolbar */
       .toolbar {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(255,255,255,0.9);
-        backdrop-filter: blur(10px);
-        padding: 8px 16px;
-        border-radius: 50px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        display: flex;
-        gap: 10px;
-        z-index: 5001;
-        align-items: center;
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+        padding: 8px 16px; border-radius: 50px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        display: flex; gap: 10px; z-index: 5001; align-items: center;
       }
       .toolbar button {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 50%;
-        transition: background 0.2s;
+        background: transparent; border: none; cursor: pointer; padding: 8px;
+        border-radius: 50%; transition: background 0.2s; color: #333;
       }
       .toolbar button:hover { background: #eee; }
       .download-btn {
-        background-color: #000 !important;
-        color: white !important;
-        border-radius: 20px !important;
-        padding: 8px 16px !important;
-        font-weight: bold;
-        display: flex;
-        gap: 6px;
-        align-items: center;
+        background-color: #000 !important; color: white !important;
+        border-radius: 20px !important; padding: 8px 16px !important;
+        font-weight: bold; display: flex; gap: 6px; align-items: center;
       }
 
       /* Loading Overlay */
       #loading-overlay {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        z-index: 6000;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.85); z-index: 6000;
+        color: white; display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
       }
       .spinner {
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid var(--primary);
-        border-radius: 50%;
-        width: 60px; height: 60px;
-        animation: spin 1s linear infinite;
-        margin-bottom: 20px;
+        border: 5px solid #f3f3f3; border-top: 5px solid var(--primary);
+        border-radius: 50%; width: 60px; height: 60px;
+        animation: spin 1s linear infinite; margin-bottom: 20px;
       }
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-      /* --- RESPONSIVE --- */
+      /* --- RESPONSIVE FIXES --- */
       @media (max-width: 900px) {
-        #app-layout {
-          flex-direction: column;
-        }
-        .brand-panel {
-          width: 100%;
-          padding: 30px 20px;
-          min-height: auto;
-        }
-        .robot-img {
-            max-width: 150px;
+        #app-layout { flex-direction: column; }
+        .brand-panel { width: 100%; padding: 30px 20px; }
+        .robot-img { max-width: 150px; margin-top: 10px; }
+        .form-panel { width: 100%; padding: 20px; }
+        .form-row { flex-direction: column; gap: 0; }
+        
+        /* Mobile Paper View */
+        .paper-page { 
+            width: 95%;      /* Fit to mobile screen width */
+            padding: 15mm; 
+            min-height: auto; 
             margin-top: 10px;
         }
-        .form-panel {
-          width: 100%;
-          padding: 20px;
-          overflow: visible;
-        }
-        .form-row { flex-direction: column; gap: 0;}
-        
-        /* Mobile Paper Fixes */
-        .paper-page { 
-            width: 95%; /* Fit mobile screen */
-            padding: 10mm; 
-            min-height: auto; 
-            margin-top: 20px;
-        }
-        #paper-view-container {
-            align-items: flex-start;
-            padding-top: 70px;
-        }
+        #paper-view-container { padding-top: 70px; }
       }
     </style>
   </head>
@@ -496,11 +358,9 @@
     <div id="app-layout">
         
         <div class="brand-panel">
-            <div class="brand-content">
-                <div class="logo">TUTO</div>
-                <div class="tagline">Generate Exams in Seconds with AI</div>
-                <img src="./Gemini_Generated_Image_f7fb6rf7fb6rf7fb.jpg" alt="AI Robot" class="robot-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
-            </div>
+            <div class="logo">TUTO</div>
+            <div class="tagline">Generate Exams in Seconds with AI</div>
+            <img src="./Gemini_Generated_Image_f7fb6rf7fb6rf7fb.jpg" alt="AI Robot" class="robot-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
         </div>
 
         <div class="form-panel">
@@ -510,7 +370,7 @@
                     
                     <div class="form-group">
                         <label>Subject Name</label>
-                        <input type="text" id="subjectDetails" placeholder="e.g. Information Technology" required />
+                        <input type="text" id="subjectDetails" placeholder="e.g. Science - Grade 10" required />
                     </div>
 
                     <div class="form-row">
@@ -541,17 +401,15 @@
                         </div>
                         
                         <div id="unit1-text-view">
-                            <textarea id="syllabusUnit1" rows="4" placeholder="Paste your syllabus content here..."></textarea>
+                            <textarea id="syllabusUnit1" rows="4" placeholder="Paste unit content here..."></textarea>
                         </div>
-
                         <div id="unit1-file-view" class="hidden">
                             <div class="file-drop-area">
                                 <span class="file-msg">
                                     <span class="material-symbols-outlined" style="font-size: 32px; color: var(--primary)">cloud_upload</span>
-                                    <span>Drag & Drop PDF or Click here</span>
-                                    <span id="file-name-1" style="font-weight: bold; color: var(--primary); margin-top: 5px;"></span>
+                                    <span id="file-name-1">Click to upload Unit 1 PDF/Image</span>
                                 </span>
-                                <input class="file-input" type="file" id="fileUnit1" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg" onchange="updateFileName(this, 'file-name-1')">
+                                <input class="file-input" type="file" id="fileUnit1" onchange="updateFileName(this, 'file-name-1')">
                             </div>
                         </div>
                     </div>
@@ -566,17 +424,15 @@
                         </div>
                         
                         <div id="unit2-text-view">
-                            <textarea id="syllabusUnit2" rows="4" placeholder="Paste your syllabus content here..."></textarea>
+                            <textarea id="syllabusUnit2" rows="4" placeholder="Paste unit content here..."></textarea>
                         </div>
-
                         <div id="unit2-file-view" class="hidden">
                             <div class="file-drop-area">
                                 <span class="file-msg">
                                     <span class="material-symbols-outlined" style="font-size: 32px; color: var(--primary)">cloud_upload</span>
-                                    <span>Drag & Drop PDF or Click here</span>
-                                    <span id="file-name-2" style="font-weight: bold; color: var(--primary); margin-top: 5px;"></span>
+                                    <span id="file-name-2">Click to upload Unit 2 PDF/Image</span>
                                 </span>
-                                <input class="file-input" type="file" id="fileUnit2" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg" onchange="updateFileName(this, 'file-name-2')">
+                                <input class="file-input" type="file" id="fileUnit2" onchange="updateFileName(this, 'file-name-2')">
                             </div>
                         </div>
                     </div>
@@ -592,24 +448,25 @@
 
     <div id="paper-view-container">
       <div class="toolbar">
-        <button type="button" onclick="document.execCommand('bold',false,null)">
+        <button type="button" onclick="document.execCommand('bold',false,null)" title="Bold">
           <span class="material-symbols-outlined">format_bold</span>
         </button>
-        <button type="button" onclick="document.execCommand('italic',false,null)">
+        <button type="button" onclick="document.execCommand('italic',false,null)" title="Italic">
           <span class="material-symbols-outlined">format_italic</span>
         </button>
         <button type="button" id="btn-download-pdf" class="download-btn">
-          <span class="material-symbols-outlined">download</span> PDF
+          <span class="material-symbols-outlined">download</span> Download PDF
         </button>
-        <button type="button" onclick="location.reload()" style="color: red;">
+        <button type="button" onclick="location.reload()" style="color: #ef4444;" title="Start Over">
             <span class="material-symbols-outlined">restart_alt</span>
         </button>
       </div>
 
       <div class="paper-page" id="paper-content" contenteditable="true" spellcheck="false">
+        
         <div class="header-box">
           <div>
-            <strong>Subject:</strong> <span id="paper-subject"></span><br />
+            <strong>Subject:</strong> <span id="paper-subject">Subject Name</span><br />
             <strong>College:</strong> TUTO LEARNING COLLEGE<br />
             <strong>Code:</strong> 1122
           </div>
@@ -622,17 +479,20 @@
         <div class="section-header">
           <span class="section-tag">PART A</span><span class="marks-info">(MCQ Questions)</span>
         </div>
-        <div id="part-a-container"></div>
+        <div id="part-a-container">
+            </div>
 
         <div class="section-header" style="margin-top: 40px; border-top: 1px dashed #ccc; padding-top: 20px;">
           <span class="section-tag">PART B</span><span class="marks-info">(Structured Essay)</span>
         </div>
-        <div id="part-b-container"></div>
+        <div id="part-b-container">
+            </div>
 
         <div class="section-header" style="margin-top: 40px; border-top: 1px dashed #ccc; padding-top: 20px;">
           <span class="section-tag">PART C</span><span class="marks-info">(Case Study)</span>
         </div>
-        <div id="part-c-container"></div>
+        <div id="part-c-container">
+            </div>
 
         <div class="footer">
           Generated on: <span id="footer-date"></span> | Template by TUTO LEARNING COLLEGE
@@ -646,194 +506,225 @@
     </div>
 
     <script>
+        // --- 1. UI HELPERS ---
         function switchTab(unitNum, type) {
-            const textContainer = document.getElementById(`unit${unitNum}-text-view`);
-            const fileContainer = document.getElementById(`unit${unitNum}-file-view`);
-            const wrapper = textContainer.closest('.unit-wrapper');
-            const buttons = wrapper.querySelectorAll('.tab-btn');
+            const textView = document.getElementById(`unit${unitNum}-text-view`);
+            const fileView = document.getElementById(`unit${unitNum}-file-view`);
+            const btns = textView.closest('.unit-wrapper').querySelectorAll('.tab-btn');
 
             if (type === 'text') {
-                textContainer.classList.remove('hidden');
-                fileContainer.classList.add('hidden');
-                buttons[0].classList.add('active');
-                buttons[1].classList.remove('active');
+                textView.classList.remove('hidden');
+                fileView.classList.add('hidden');
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
             } else {
-                textContainer.classList.add('hidden');
-                fileContainer.classList.remove('hidden');
-                buttons[0].classList.remove('active');
-                buttons[1].classList.add('active');
+                textView.classList.add('hidden');
+                fileView.classList.remove('hidden');
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
             }
         }
 
         function updateFileName(input, spanId) {
-            const span = document.getElementById(spanId);
             if(input.files && input.files[0]) {
-                span.innerText = input.files[0].name;
-            } else {
-                span.innerText = "";
+                document.getElementById(spanId).innerText = input.files[0].name;
+                document.getElementById(spanId).style.color = "#4f46e5";
+                document.getElementById(spanId).style.fontWeight = "bold";
             }
         }
 
-        window.addEventListener('load', function() {
-            const initLoader = document.getElementById('initial-loader');
-            setTimeout(() => {
-                initLoader.style.opacity = '0';
-                setTimeout(() => { initLoader.style.display = 'none'; }, 500);
-            }, 800);
+        // Hide initial loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('initial-loader');
+            setTimeout(() => { loader.style.opacity = '0'; setTimeout(() => loader.style.display = 'none', 500); }, 1000);
         });
 
-      document.addEventListener("DOMContentLoaded", function () {
-        const WEBHOOK_URL_1 = "https://n8n.n8yland.me/webhook/18817b49-3d58-4b53-8e7b-901e35cc4e19";
-        const WEBHOOK_URL_2 = "https://n8n.n8yland.me/webhook/2fbd818a-f9d3-4c16-8b4e-e03dbbc008bd";
+        // --- 2. MAIN APP LOGIC ---
+        document.addEventListener("DOMContentLoaded", function () {
+            // Configuration
+            const WEBHOOK_GENERATE = "https://n8n.n8yland.me/webhook/18817b49-3d58-4b53-8e7b-901e35cc4e19";
+            const WEBHOOK_PDF = "https://n8n.n8yland.me/webhook/2fbd818a-f9d3-4c16-8b4e-e03dbbc008bd";
 
-        const form = document.getElementById("syllabusForm");
-        const downloadBtn = document.getElementById("btn-download-pdf");
-        const overlay = document.getElementById("loading-overlay");
-        const loadingText = document.getElementById("loading-text");
+            const form = document.getElementById("syllabusForm");
+            const overlay = document.getElementById("loading-overlay");
+            const loadText = document.getElementById("loading-text");
+            const dateStr = new Date().toLocaleDateString();
 
-        if (form) {
-          form.addEventListener("submit", async function (e) {
-            e.preventDefault();
-            loadingText.innerText = "Thinking...";
-            overlay.classList.remove("hidden");
+            // Setup Dates
+            document.getElementById("paper-date").innerText = dateStr;
+            document.getElementById("footer-date").innerText = dateStr;
 
-            const formData = new FormData();
-            formData.append("subjectDetails", document.getElementById("subjectDetails").value || "");
-            formData.append("language", document.getElementById("language").value || "english");
-            formData.append("level", document.getElementById("level").value || "medium");
+            // Handle Form Submission
+            if (form) {
+                form.addEventListener("submit", async function (e) {
+                    e.preventDefault();
+                    loadText.innerText = "Analyzing Syllabus & Generating Questions...";
+                    overlay.classList.remove("hidden");
 
-            const f1 = document.getElementById("fileUnit1").files[0];
-            const t1 = document.getElementById("syllabusUnit1").value;
-            if (f1) {
-              formData.append("fileUnit1", f1);
-              formData.append("syllabusUnit1Type", "file");
-            } else {
-              formData.append("syllabusUnit1", t1 || "");
-              formData.append("syllabusUnit1Type", "text");
+                    const formData = new FormData();
+                    formData.append("subjectDetails", document.getElementById("subjectDetails").value);
+                    formData.append("language", document.getElementById("language").value);
+                    formData.append("level", document.getElementById("level").value);
+
+                    // Add Unit 1 Data
+                    const f1 = document.getElementById("fileUnit1").files[0];
+                    if (f1) {
+                        formData.append("fileUnit1", f1);
+                        formData.append("syllabusUnit1Type", "file");
+                    } else {
+                        formData.append("syllabusUnit1", document.getElementById("syllabusUnit1").value);
+                        formData.append("syllabusUnit1Type", "text");
+                    }
+
+                    // Add Unit 2 Data
+                    const f2 = document.getElementById("fileUnit2").files[0];
+                    if (f2) {
+                        formData.append("fileUnit2", f2);
+                        formData.append("syllabusUnit2Type", "file");
+                    } else {
+                        formData.append("syllabusUnit2", document.getElementById("syllabusUnit2").value);
+                        formData.append("syllabusUnit2Type", "text");
+                    }
+
+                    try {
+                        const res = await fetch(WEBHOOK_GENERATE, { method: "POST", body: formData });
+                        
+                        if (!res.ok) throw new Error("Server Error");
+                        const data = await res.json();
+                        populatePaper(data);
+
+                    } catch (err) {
+                        console.warn("Using Local Fallback:", err);
+                        populatePaper(getFallbackData());
+                        alert("Note: Connecting to AI server failed. Showing sample preview instead.");
+                    } finally {
+                        // Switch Views
+                        document.getElementById("app-layout").style.display = "none";
+                        document.getElementById("paper-view-container").style.display = "flex";
+                        overlay.classList.add("hidden");
+                    }
+                });
             }
 
-            const f2 = document.getElementById("fileUnit2").files[0];
-            const t2 = document.getElementById("syllabusUnit2").value;
-            if (f2) {
-              formData.append("fileUnit2", f2);
-              formData.append("syllabusUnit2Type", "file");
-            } else {
-              formData.append("syllabusUnit2", t2 || "");
-              formData.append("syllabusUnit2Type", "text");
-            }
+            // Handle PDF Download
+            document.getElementById("btn-download-pdf").addEventListener("click", async function () {
+                loadText.innerText = "Generating PDF...";
+                overlay.classList.remove("hidden");
 
-            try {
-              const res = await fetch(WEBHOOK_URL_1, {
-                method: "POST",
-                body: formData,
-              });
+                // Get HTML content
+                const styles = Array.from(document.querySelectorAll("style")).map(s => s.outerHTML).join("");
+                const content = document.getElementById("paper-content").innerHTML;
+                const fullHTML = `<!DOCTYPE html><html><head><meta charset="utf-8">${styles}<style>@page{size:A4;margin:0}body{background:#fff}.paper-page{width:210mm;min-height:297mm;padding:20mm;height:auto !important;}.q-block{page-break-inside:avoid}</style></head><body><div class="paper-page">${content}</div></body></html>`;
 
-              if (!res.ok) throw new Error("Webhook Error");
-              const data = await res.json();
-              populatePaper(data);
-
-            } catch (err) {
-              console.error("Using Local Fallback due to error:", err);
-              const fallbackData = generateQuestionsFromSyllabus();
-              populatePaper(fallbackData);
-              alert("Note: Server unreachable. Generated local preview.");
-            } finally {
-              document.getElementById("app-layout").style.display = "none";
-              document.getElementById("paper-view-container").style.display = "flex";
-              overlay.classList.add("hidden");
-            }
-          });
-        }
-
-        if (downloadBtn) {
-          downloadBtn.addEventListener("click", async function () {
-            loadingText.innerText = "Generating PDF...";
-            overlay.classList.remove("hidden");
-
-            const inlineStyles = Array.from(document.querySelectorAll("style")).map((el) => el.outerHTML).join("");
-            const content = document.getElementById("paper-content").innerHTML;
-            const finalHtml = `<!DOCTYPE html><html><head><meta charset="utf-8">${inlineStyles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:#fff}.paper-page{width:210mm;min-height:297mm;padding:20mm;box-sizing:border-box}.q-block,.section-header,.header-box{page-break-inside:avoid}</style></head><body><div class="paper-page">${content}</div></body></html>`;
-
-            try {
-              const res = await fetch(WEBHOOK_URL_2, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ html: finalHtml }),
-              });
-
-              if (!res.ok) throw new Error("PDF Server Error");
-              const blob = await res.blob();
-              const url = window.URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = (document.getElementById("subjectDetails").value || "Paper") + ".pdf";
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-            } catch (err) {
-              console.error("Fallback to Client PDF", err);
-              const element = document.getElementById("paper-content");
-              html2pdf().set({
-                  margin: 0,
-                  filename: (document.getElementById("subjectDetails").value || "Paper") + ".pdf",
-                  image: { type: "jpeg", quality: 0.98 },
-                  html2canvas: { scale: 2, useCORS: true },
-                  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-                }).from(element).save();
-            } finally {
-              overlay.classList.add("hidden");
-            }
-          });
-        }
-
-        function populatePaper(data) {
-          document.getElementById("paper-subject").innerText = document.getElementById("subjectDetails").value || data.subject || "";
-          const today = new Date().toLocaleDateString();
-          document.getElementById("paper-date").innerText = today;
-          document.getElementById("footer-date").innerText = today;
-
-          const divA = document.getElementById("part-a-container");
-          divA.innerHTML = "";
-          const qs = data.QuestionsA || data.questions || (data.generated ? data.generated.MCQs : []);
-          
-          if(qs && Array.isArray(qs)) {
-            qs.forEach((q, i) => {
-                let qText = q.question || q;
-                let optsHTML = "";
-                if(q.option_1) {
-                     optsHTML = [q.option_1, q.option_2, q.option_3, q.option_4].map((o,x)=> `<div>${['a','b','c','d'][x]}) ${o}</div>`).join("");
-                } else if(q.options) {
-                     optsHTML = q.options.map((o,x)=> `<div>${['a','b','c','d'][x]}) ${o}</div>`).join("");
+                try {
+                    // Try Server PDF
+                    const res = await fetch(WEBHOOK_PDF, {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ html: fullHTML })
+                    });
+                    if (!res.ok) throw new Error("PDF Server Fail");
+                    const blob = await res.blob();
+                    downloadBlob(blob);
+                } catch (e) {
+                    console.warn("Client PDF Fallback", e);
+                    // Client Fallback
+                    const el = document.getElementById("paper-content");
+                    const opt = {
+                        margin: 0,
+                        filename: (document.getElementById("subjectDetails").value || "Paper") + ".pdf",
+                        image: { type: "jpeg", quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true },
+                        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+                    };
+                    html2pdf().set(opt).from(el).save();
+                } finally {
+                    overlay.classList.add("hidden");
                 }
-                divA.innerHTML += `<div class="q-block"><div class="q-text">${i + 1}. ${qText}</div><div class="mcq-grid">${optsHTML}</div></div>`;
             });
-          }
 
-          const fillSec = (arr, el) => {
-            el.innerHTML = "";
-            if (arr && Array.isArray(arr)) {
-              arr.forEach((q, i) => {
-                el.innerHTML += `<div class="q-block"><div class="q-text">Q${i + 1}. ${q}</div><br><div style="border-bottom:1px dotted #ccc;height:30px"></div><div style="border-bottom:1px dotted #ccc;height:30px"></div></div>`;
-              });
+            // Helper: Download Blob
+            function downloadBlob(blob) {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = (document.getElementById("subjectDetails").value || "Exam_Paper") + ".pdf";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
             }
-          };
-          
-          fillSec(data.QuestionsB || (data.generated ? data.generated.essays : []), document.getElementById("part-b-container"));
-          fillSec(data.QuestionsC || [], document.getElementById("part-c-container"));
-        }
 
-        function generateQuestionsFromSyllabus() {
-          return {
-            generated: {
-              MCQs: [
-                { question: "Sample Question 1: What is the main idea?", options: ["A", "B", "C", "D"] },
-                { question: "Sample Question 2: Select the correct option.", options: ["Option 1", "Option 2", "Option 3", "Option 4"] }
-              ],
-              essays: ["Describe the process in detail.", "Compare the two main concepts."]
+            // Helper: Populate Data into Paper
+            function populatePaper(data) {
+                const subj = document.getElementById("subjectDetails").value;
+                document.getElementById("paper-subject").innerText = subj || data.subject || "General Exam";
+
+                // 1. MCQs
+                const divA = document.getElementById("part-a-container");
+                divA.innerHTML = "";
+                const mcqs = data.QuestionsA || data.questions || (data.generated ? data.generated.MCQs : []);
+                
+                if (mcqs && mcqs.length) {
+                    mcqs.forEach((q, i) => {
+                        let text = q.question || q;
+                        let opts = "";
+                        
+                        // Handle different option formats
+                        if (q.option_1) {
+                            opts = [q.option_1, q.option_2, q.option_3, q.option_4]
+                                .map((o, x) => `<div>${['a','b','c','d'][x]}) ${o}</div>`).join("");
+                        } else if (q.options) {
+                            opts = q.options.map((o, x) => `<div>${['a','b','c','d'][x]}) ${o}</div>`).join("");
+                        }
+                        
+                        divA.innerHTML += `
+                            <div class="q-block">
+                                <div class="q-text">${i + 1}. ${text}</div>
+                                <div class="mcq-grid">${opts}</div>
+                            </div>`;
+                    });
+                } else {
+                    divA.innerHTML = "<p>No MCQ questions generated.</p>";
+                }
+
+                // 2. Essays (Part B & C)
+                const fillItems = (items, containerId, prefix) => {
+                    const el = document.getElementById(containerId);
+                    el.innerHTML = "";
+                    if (items && items.length) {
+                        items.forEach((q, i) => {
+                             el.innerHTML += `
+                                <div class="q-block">
+                                    <div class="q-text">${prefix}${i + 1}. ${q}</div>
+                                    <br><div style="border-bottom:1px dotted #ccc;height:30px"></div>
+                                    <div style="border-bottom:1px dotted #ccc;height:30px"></div>
+                                </div>`;
+                        });
+                    } else {
+                        el.innerHTML = "<p>No questions generated for this section.</p>";
+                    }
+                };
+
+                fillItems(data.QuestionsB || (data.generated ? data.generated.essays : []), "part-b-container", "Q");
+                fillItems(data.QuestionsC || [], "part-c-container", "C");
             }
-          };
-        }
-      });
+
+            // Helper: Fallback Data
+            function getFallbackData() {
+                return {
+                    generated: {
+                        MCQs: [
+                            { question: "This is a sample question because the server connection failed.", options: ["Option A", "Option B", "Option C", "Option D"] },
+                            { question: "What is the capital of Sri Lanka?", options: ["Colombo", "Kandy", "Galle", "Jaffna"] },
+                            { question: "Which protocol is used for web browsing?", options: ["FTP", "SMTP", "HTTP", "TCP"] }
+                        ],
+                        essays: [
+                            "Explain the concept of Artificial Intelligence in your own words.",
+                            "Describe the importance of green energy for the future."
+                        ]
+                    }
+                };
+            }
+        });
     </script>
   </body>
 </html>
