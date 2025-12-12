@@ -29,9 +29,6 @@
         --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         --text-dark: #1e293b;
         --text-light: #64748b;
-        --bg-mesh-1: #ff9a9e;
-        --bg-mesh-2: #fad0c4;
-        --bg-mesh-3: #a1c4fd;
       }
 
       * {
@@ -75,7 +72,7 @@
         padding: 40px;
         color: white;
         text-align: center;
-        background: rgba(0, 0, 0, 0.2); /* Slight dim for text contrast */
+        background: rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(5px);
       }
 
@@ -154,7 +151,6 @@
         color: var(--text-dark);
       }
 
-      /* Modern Input Styles */
       input[type="text"],
       select,
       textarea {
@@ -234,7 +230,6 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       }
 
-      /* File Upload Styling */
       .file-drop-area {
         position: relative;
         display: flex;
@@ -272,7 +267,6 @@
         cursor: pointer;
       }
 
-      /* --- BUTTONS --- */
       .submit-btn {
         width: 100%;
         padding: 18px;
@@ -293,9 +287,6 @@
       .submit-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
-      }
-      .submit-btn:active {
-        transform: scale(0.98);
       }
 
       /* --- INITIAL LOADER --- */
@@ -321,29 +312,38 @@
         50% { opacity: 0.7; transform: scale(0.95); }
       }
 
-      /* --- UTILITY CLASSES --- */
       .hidden { display: none !important; }
 
       /* =========================================
-         PAPER VIEW STYLES (Kept strict for PDF)
+         FIXED PAPER VIEW STYLES
          ========================================= */
       #paper-view-container {
-        display: none; /* Hidden by default */
+        display: none;
         position: fixed;
         top: 0; left: 0;
         width: 100vw;
         height: 100vh;
         background: #525659;
         z-index: 5000;
+        
+        /* FIX 1: Allow scrolling properly */
         overflow-y: auto;
-        padding-top: 80px;
+        padding-top: 100px;
+        padding-bottom: 50px;
+        
+        /* FIX 2: Use flex-start so top doesn't get cut off */
+        display: flex;
         justify-content: center;
+        align-items: flex-start; 
       }
 
       .paper-page {
         background: #fff;
         width: 210mm;
+        /* FIX 3: min-height ensures A4 size, auto allows expansion */
         min-height: 297mm;
+        height: auto; 
+        
         padding: 20mm;
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
         display: flex;
@@ -360,7 +360,7 @@
         display: flex;
         justify-content: space-between;
         font-size: 14px;
-        font-family: 'Times New Roman', Times, serif; /* Formal font for paper */
+        font-family: 'Times New Roman', Times, serif;
       }
       
       .section-header {
@@ -472,16 +472,24 @@
             align-items: center;
         }
         .robot-img {
-            max-width: 150px; /* Smaller robot on mobile */
+            max-width: 150px;
             margin-top: 10px;
         }
         .form-panel {
           width: 100%;
           padding: 20px;
-          overflow: visible; /* Let body scroll on mobile */
+          overflow: visible;
         }
         .form-row { flex-direction: column; gap: 0;}
-        .paper-page { width: 100%; padding: 10mm; min-height: auto; }
+        
+        /* Fix for mobile paper view */
+        .paper-page { 
+            width: 95%; /* Fit to screen width */
+            margin: 0 auto 40px auto; 
+            padding: 10mm; 
+            min-height: auto; 
+            height: auto; /* Ensure expansion on mobile too */
+        }
       }
     </style>
   </head>
@@ -490,7 +498,7 @@
         <div class="tuto-logo-text">TUTO</div>
     </div>
 
-    <div id="app-layout" id="input-view-container">
+    <div id="app-layout">
         
         <div class="brand-panel">
             <div class="brand-content">
@@ -643,12 +651,10 @@
     </div>
 
     <script>
-        // --- UI LOGIC: Tabs & Files ---
+        // --- UI LOGIC ---
         function switchTab(unitNum, type) {
             const textContainer = document.getElementById(`unit${unitNum}-text-view`);
             const fileContainer = document.getElementById(`unit${unitNum}-file-view`);
-            
-            // Get buttons in this specific wrapper
             const wrapper = textContainer.closest('.unit-wrapper');
             const buttons = wrapper.querySelectorAll('.tab-btn');
 
@@ -657,8 +663,6 @@
                 fileContainer.classList.add('hidden');
                 buttons[0].classList.add('active');
                 buttons[1].classList.remove('active');
-                // clear file input if switching back to text to avoid confusion? 
-                // optional: document.getElementById(`fileUnit${unitNum}`).value = "";
             } else {
                 textContainer.classList.add('hidden');
                 fileContainer.classList.remove('hidden');
@@ -676,7 +680,6 @@
             }
         }
 
-        // --- CORE APPLICATION LOGIC (Preserved) ---
         window.addEventListener('load', function() {
             const initLoader = document.getElementById('initial-loader');
             setTimeout(() => {
@@ -686,6 +689,7 @@
         });
 
       document.addEventListener("DOMContentLoaded", function () {
+        // --- CONFIGURATION ---
         const WEBHOOK_URL_1 = "https://n8n.n8yland.me/webhook/18817b49-3d58-4b53-8e7b-901e35cc4e19";
         const WEBHOOK_URL_2 = "https://n8n.n8yland.me/webhook/2fbd818a-f9d3-4c16-8b4e-e03dbbc008bd";
 
@@ -706,11 +710,9 @@
             formData.append("language", document.getElementById("language").value || "english");
             formData.append("level", document.getElementById("level").value || "medium");
 
-            // Logic to check which tab is active or simply send what is available
             // Unit 1
             const f1 = document.getElementById("fileUnit1").files[0];
             const t1 = document.getElementById("syllabusUnit1").value;
-            // Prefer file if selected and visible (simple check: if file exists, send file)
             if (f1) {
               formData.append("fileUnit1", f1);
               formData.append("syllabusUnit1Type", "file");
@@ -742,10 +744,7 @@
 
             } catch (err) {
               console.error("Using Local Fallback due to error:", err);
-              const fallbackData = generateQuestionsFromSyllabus(
-                document.getElementById("syllabusUnit1").value,
-                document.getElementById("syllabusUnit2").value
-              );
+              const fallbackData = generateQuestionsFromSyllabus();
               populatePaper(fallbackData);
               alert("Note: Server unreachable. Generated local preview.");
             } finally {
@@ -786,7 +785,6 @@
               a.remove();
             } catch (err) {
               console.error("Fallback to Client PDF", err);
-              // Client Side Fallback
               const element = document.getElementById("paper-content");
               html2pdf().set({
                   margin: 0,
@@ -817,10 +815,8 @@
                 let qText = q.question || q;
                 let optsHTML = "";
                 if(q.option_1) {
-                    // Standard format
                      optsHTML = [q.option_1, q.option_2, q.option_3, q.option_4].map((o,x)=> `<div>${['a','b','c','d'][x]}) ${o}</div>`).join("");
                 } else if(q.options) {
-                    // Fallback format
                      optsHTML = q.options.map((o,x)=> `<div>${['a','b','c','d'][x]}) ${o}</div>`).join("");
                 }
                 divA.innerHTML += `<div class="q-block"><div class="q-text">${i + 1}. ${qText}</div><div class="mcq-grid">${optsHTML}</div></div>`;
@@ -841,8 +837,7 @@
           fillSec(data.QuestionsC || [], document.getElementById("part-c-container"));
         }
 
-        // Local Fallback Generator
-        function generateQuestionsFromSyllabus(u1, u2) {
+        function generateQuestionsFromSyllabus() {
           return {
             generated: {
               MCQs: [
