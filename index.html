@@ -183,7 +183,7 @@
         flex: 1;
       }
 
-      /* --- TABS SYSTEM FOR UNITS --- */
+      /* --- TABS SYSTEM --- */
       .unit-wrapper {
         background: rgba(255, 255, 255, 0.4);
         border-radius: 16px;
@@ -230,6 +230,7 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       }
 
+      /* File Upload Styling */
       .file-drop-area {
         position: relative;
         display: flex;
@@ -315,35 +316,31 @@
       .hidden { display: none !important; }
 
       /* =========================================
-         FIXED PAPER VIEW STYLES
+         PAPER VIEW STYLES (FIXED)
          ========================================= */
       #paper-view-container {
         display: none;
         position: fixed;
-        top: 0; left: 0;
+        top: 0; 
+        left: 0;
         width: 100vw;
         height: 100vh;
         background: #525659;
         z-index: 5000;
-        
-        /* FIX 1: Allow scrolling properly */
-        overflow-y: auto;
-        padding-top: 100px;
+        overflow-y: auto; /* Allow Scrolling */
+        padding-top: 80px;
         padding-bottom: 50px;
-        
-        /* FIX 2: Use flex-start so top doesn't get cut off */
+        /* FLEX FIXES FOR SCROLLING */
         display: flex;
         justify-content: center;
-        align-items: flex-start; 
+        align-items: flex-start; /* Start from top so content grows down */
       }
 
       .paper-page {
         background: #fff;
-        width: 210mm;
-        /* FIX 3: min-height ensures A4 size, auto allows expansion */
+        width: 210mm; 
         min-height: 297mm;
-        height: auto; 
-        
+        height: auto; /* Allow height to grow dynamically */
         padding: 20mm;
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
         display: flex;
@@ -456,7 +453,7 @@
       }
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-      /* --- RESPONSIVE MEDIA QUERIES --- */
+      /* --- RESPONSIVE --- */
       @media (max-width: 900px) {
         #app-layout {
           flex-direction: column;
@@ -465,11 +462,6 @@
           width: 100%;
           padding: 30px 20px;
           min-height: auto;
-        }
-        .brand-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
         .robot-img {
             max-width: 150px;
@@ -482,13 +474,16 @@
         }
         .form-row { flex-direction: column; gap: 0;}
         
-        /* Fix for mobile paper view */
+        /* Mobile Paper Fixes */
         .paper-page { 
-            width: 95%; /* Fit to screen width */
-            margin: 0 auto 40px auto; 
+            width: 95%; /* Fit mobile screen */
             padding: 10mm; 
             min-height: auto; 
-            height: auto; /* Ensure expansion on mobile too */
+            margin-top: 20px;
+        }
+        #paper-view-container {
+            align-items: flex-start;
+            padding-top: 70px;
         }
       }
     </style>
@@ -651,7 +646,6 @@
     </div>
 
     <script>
-        // --- UI LOGIC ---
         function switchTab(unitNum, type) {
             const textContainer = document.getElementById(`unit${unitNum}-text-view`);
             const fileContainer = document.getElementById(`unit${unitNum}-file-view`);
@@ -689,7 +683,6 @@
         });
 
       document.addEventListener("DOMContentLoaded", function () {
-        // --- CONFIGURATION ---
         const WEBHOOK_URL_1 = "https://n8n.n8yland.me/webhook/18817b49-3d58-4b53-8e7b-901e35cc4e19";
         const WEBHOOK_URL_2 = "https://n8n.n8yland.me/webhook/2fbd818a-f9d3-4c16-8b4e-e03dbbc008bd";
 
@@ -698,7 +691,6 @@
         const overlay = document.getElementById("loading-overlay");
         const loadingText = document.getElementById("loading-text");
 
-        // --- SUBMISSION HANDLER ---
         if (form) {
           form.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -710,7 +702,6 @@
             formData.append("language", document.getElementById("language").value || "english");
             formData.append("level", document.getElementById("level").value || "medium");
 
-            // Unit 1
             const f1 = document.getElementById("fileUnit1").files[0];
             const t1 = document.getElementById("syllabusUnit1").value;
             if (f1) {
@@ -721,7 +712,6 @@
               formData.append("syllabusUnit1Type", "text");
             }
 
-            // Unit 2
             const f2 = document.getElementById("fileUnit2").files[0];
             const t2 = document.getElementById("syllabusUnit2").value;
             if (f2) {
@@ -748,7 +738,6 @@
               populatePaper(fallbackData);
               alert("Note: Server unreachable. Generated local preview.");
             } finally {
-              // Hide Input Layout, Show Paper Layout
               document.getElementById("app-layout").style.display = "none";
               document.getElementById("paper-view-container").style.display = "flex";
               overlay.classList.add("hidden");
@@ -756,13 +745,11 @@
           });
         }
 
-        // --- PDF DOWNLOAD ---
         if (downloadBtn) {
           downloadBtn.addEventListener("click", async function () {
             loadingText.innerText = "Generating PDF...";
             overlay.classList.remove("hidden");
 
-            // Prepare HTML for server
             const inlineStyles = Array.from(document.querySelectorAll("style")).map((el) => el.outerHTML).join("");
             const content = document.getElementById("paper-content").innerHTML;
             const finalHtml = `<!DOCTYPE html><html><head><meta charset="utf-8">${inlineStyles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:#fff}.paper-page{width:210mm;min-height:297mm;padding:20mm;box-sizing:border-box}.q-block,.section-header,.header-box{page-break-inside:avoid}</style></head><body><div class="paper-page">${content}</div></body></html>`;
@@ -790,7 +777,7 @@
                   margin: 0,
                   filename: (document.getElementById("subjectDetails").value || "Paper") + ".pdf",
                   image: { type: "jpeg", quality: 0.98 },
-                  html2canvas: { scale: 2 },
+                  html2canvas: { scale: 2, useCORS: true },
                   jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
                 }).from(element).save();
             } finally {
@@ -805,7 +792,6 @@
           document.getElementById("paper-date").innerText = today;
           document.getElementById("footer-date").innerText = today;
 
-          // MCQs
           const divA = document.getElementById("part-a-container");
           divA.innerHTML = "";
           const qs = data.QuestionsA || data.questions || (data.generated ? data.generated.MCQs : []);
@@ -823,7 +809,6 @@
             });
           }
 
-          // Essays
           const fillSec = (arr, el) => {
             el.innerHTML = "";
             if (arr && Array.isArray(arr)) {
@@ -841,11 +826,10 @@
           return {
             generated: {
               MCQs: [
-                { question: "What is the primary concept discussed in Unit 1?", options: ["Concept A", "Concept B", "Concept C", "Concept D"] },
-                { question: "Identify the key term from the syllabus.", options: ["Term X", "Term Y", "Term Z", "None"] },
-                { question: "Which is true according to the text provided?", options: ["True Statement", "False Statement", "False Statement", "False Statement"] }
+                { question: "Sample Question 1: What is the main idea?", options: ["A", "B", "C", "D"] },
+                { question: "Sample Question 2: Select the correct option.", options: ["Option 1", "Option 2", "Option 3", "Option 4"] }
               ],
-              essays: ["Explain the importance of the topics in Unit 1.", "Compare and contrast the ideas in Unit 2."]
+              essays: ["Describe the process in detail.", "Compare the two main concepts."]
             }
           };
         }
