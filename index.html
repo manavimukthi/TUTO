@@ -80,8 +80,11 @@
       }
 
       .brand-content {
-        max-width: 400px;
+        max-width: 450px;
         z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
 
       .logo {
@@ -99,16 +102,19 @@
         font-weight: 300;
       }
 
-      .robot-img {
+      /* --- UPDATED HERO IMAGE STYLES --- */
+      .brand-hero-img {
         width: 100%;
-        max-width: 320px;
-        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+        max-width: 380px; /* Sizing for illustration */
+        height: auto;
+        filter: drop-shadow(0 15px 30px rgba(0,0,0,0.25));
         animation: float 6s ease-in-out infinite;
+        object-fit: contain;
       }
 
       @keyframes float {
         0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
+        50% { transform: translateY(-15px); }
         100% { transform: translateY(0px); }
       }
 
@@ -325,7 +331,7 @@
       .hidden { display: none !important; }
 
       /* =========================================
-         PAPER VIEW STYLES (FIXED FOR EXPANSION)
+         PAPER VIEW STYLES
          ========================================= */
       #paper-view-container {
         display: none; /* Hidden by default */
@@ -335,8 +341,6 @@
         height: 100%;
         background: #525659;
         z-index: 5000;
-        
-        /* FIX: Changed flex properties to allow vertical scrolling of tall pages */
         flex-direction: column;
         align-items: center;
         overflow-y: auto;
@@ -348,7 +352,6 @@
         background: #fff;
         width: 210mm;
         min-height: 297mm;
-        /* FIX: Allow height to grow automatically */
         height: auto; 
         padding: 20mm;
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -357,7 +360,6 @@
         color: black;
         box-sizing: border-box;
         margin-bottom: 40px;
-        /* FIX: Prevent page from shrinking in flex container */
         flex-shrink: 0;
       }
 
@@ -368,7 +370,7 @@
         display: flex;
         justify-content: space-between;
         font-size: 14px;
-        font-family: 'Times New Roman', Times, serif; /* Formal font for paper */
+        font-family: 'Times New Roman', Times, serif; 
       }
       
       .section-header {
@@ -479,9 +481,9 @@
             flex-direction: column;
             align-items: center;
         }
-        .robot-img {
-            max-width: 150px; /* Smaller robot on mobile */
-            margin-top: 10px;
+        .brand-hero-img {
+            max-width: 220px; /* Smaller image on mobile */
+            margin-top: 15px;
         }
         .form-panel {
           width: 100%;
@@ -504,7 +506,13 @@
             <div class="brand-content">
                 <div class="logo">TUTO</div>
                 <div class="tagline">Generate Exams in Seconds with AI</div>
-                <img src="./Gemini_Generated_Image_f7fb6rf7fb6rf7fb.jpg" alt="AI Robot" class="robot-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
+                
+                <img 
+                  src="./datamanagement_documentpaperpagearchivewritewritingwomanpeopleperson2x-ezgif.com-png-to-webp-converter.jpg" 
+                  alt="Exam Generation Illustration" 
+                  class="brand-hero-img"
+                  onerror="this.style.display='none'"
+                >
             </div>
         </div>
 
